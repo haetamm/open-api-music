@@ -19,7 +19,7 @@ class PlaylistsHandler {
       name, owner: credentialId
     })
     const response = h.response({
-      status: 'success',
+      status: 'succes',
       data: {
         playlistId
       }

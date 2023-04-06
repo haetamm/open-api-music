@@ -61,6 +61,16 @@ class UsersService {
 
     return id
   }
+
+  async getUser (id) {
+    const query = {
+      text: 'SELECT id, fullname, username FROM users WHERE id = $1',
+      values: [id]
+    }
+    const result = await this._pool.query(query)
+
+    return result.rows[0]
+  }
 }
 
 module.exports = UsersService

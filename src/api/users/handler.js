@@ -4,6 +4,7 @@ class UserHandler {
     this._validator = validator
 
     this.postUserHandler = this.postUserHandler.bind(this)
+    this.getUserHandler = this.getUserHandler.bind(this)
   }
 
   async postUserHandler (request, h) {
@@ -20,6 +21,22 @@ class UserHandler {
       }
     })
     response.code(201)
+    return response
+  }
+
+  async getUserHandler (request, h) {
+    const { id: credentialId } = request.auth.credentials
+
+    const user = await this._service.getUser(credentialId)
+
+    const response = h.response({
+      status: 'success',
+      message: 'selamat datang',
+      data: {
+        user
+      }
+    })
+    response.code(200)
     return response
   }
 }
