@@ -14,7 +14,7 @@ class PlaylistSongsService {
   }
 
   async addPlaylistSong ({ songId, id, userId }) {
-    await this.verifyNewSongInPlaylists(songId)
+    await this.verifyNewSongInPlaylists(songId, id)
     const idPlaylistSong = `playlistSong-${nanoid(16)}`
     const query = {
       text: 'INSERT INTO playlist_songs VALUES ($1, $2, $3) RETURNING id',
@@ -30,10 +30,10 @@ class PlaylistSongsService {
     }
   }
 
-  async verifyNewSongInPlaylists (songId) {
+  async verifyNewSongInPlaylists (songId, id) {
     const query = {
-      text: 'SELECT song_id FROM playlist_songs WHERE song_id = $1',
-      values: [songId]
+      text: 'SELECT song_id FROM playlist_songs WHERE song_id = $1 AND playlist_id = $2',
+      values: [songId, id]
     }
 
     const result = await this._pool.query(query)
