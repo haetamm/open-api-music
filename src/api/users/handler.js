@@ -26,6 +26,7 @@ class UserHandler {
 
   async getUserHandler (request, h) {
     const { id: credentialId } = request.auth.credentials
+    console.log(credentialId)
 
     const user = await this._service.getUser(credentialId)
 

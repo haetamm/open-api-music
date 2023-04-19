@@ -14,6 +14,7 @@ class PlaylistSongsService {
   }
 
   async addPlaylistSong ({ songId, id, userId }) {
+    await this.verifyNewSongInPlaylists(songId)
     const idPlaylistSong = `playlistSong-${nanoid(16)}`
     const query = {
       text: 'INSERT INTO playlist_songs VALUES ($1, $2, $3) RETURNING id',
@@ -26,6 +27,19 @@ class PlaylistSongsService {
       throw new InvariantError('Lagu gagal ditambahkan ke playlist')
     } else {
       await this.addPlaylistActivities({ id, songId, userId, action: 'add' })
+    }
+  }
+
+  async verifyNewSongInPlaylists (songId) {
+    const query = {
+      text: 'SELECT song_id FROM playlist_songs WHERE song_id = $1',
+      values: [songId]
+    }
+
+    const result = await this._pool.query(query)
+
+    if (result.rowCount) {
+      throw new InvariantError('Lagu sudah ada di playlists')
     }
   }
 

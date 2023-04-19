@@ -13,6 +13,7 @@ class PlaylistSongsHandler {
     this._validator.validatePlaylistSongsPayload(request.payload)
 
     const { songId } = request.payload
+
     const { id } = request.params
     const { id: credentialId } = request.auth.credentials
     const userId = credentialId

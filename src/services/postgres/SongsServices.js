@@ -30,6 +30,7 @@ class SongsService {
   async getSongs (title, performer) {
     if (title && !performer) {
       const result = await this._pool.query(`SELECT * FROM songs WHERE title LIKE '%${title.charAt(0).toUpperCase() + title.slice(1)}%'`)
+      console.log(result.rows)
       return result.rows.map(mapDBToModelSong)
     } else if (!title && performer) {
       const result = await this._pool.query(`SELECT * FROM songs WHERE performer LIKE '%${performer.charAt(0).toUpperCase() + performer.slice(1)}%'`)
