@@ -1,18 +1,31 @@
 const amqp = require('amqplib')
 
-const ProduceService = {
+const ProducerService = {
   sendMessage: async (queue, message) => {
-    const connection = await amqp.connect(process.env.RABBITMQ_SERVER)
-    const channel = await connection.createChannel()
-    await channel.assertQueue(queue, {
-      durable: true
-    })
-    await channel.sendToQueue(queue, Buffer.from(message))
+    let connection
+    try {
+      // Connect to CloudAMQP using RABBITMQ_SERVER from .env
+      connection = await amqp.connect(process.env.RABBITMQ_SERVER)
+      const channel = await connection.createChannel()
 
-    setTimeout(() => {
-      connection.close()
-    }, 1000)
+      // Assert queue
+      await channel.assertQueue(queue, {
+        durable: true
+      })
+
+      // Send message to queue
+      await channel.sendToQueue(queue, Buffer.from(message))
+      console.log(`Message sent to queue ${queue}: ${message}`)
+
+      // Close connection after a short delay
+      setTimeout(() => {
+        connection.close().catch((err) => console.error('Error closing connection:', err))
+      }, 1000)
+    } catch (error) {
+      console.error('Error in ProducerService.sendMessage:', error)
+      throw error
+    }
   }
 }
 
-module.exports = ProduceService
+module.exports = ProducerService

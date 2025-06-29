@@ -6,7 +6,9 @@ const AuthenticationError = require('../../exceptions/AuthenticationError')
 
 class UsersService {
   constructor () {
-    this._pool = new Pool()
+    this._pool = new Pool({
+      connectionString: process.env.DATABASE_URL
+    })
   }
 
   async addUser ({ username, password, fullname }) {

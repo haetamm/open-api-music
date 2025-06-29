@@ -6,7 +6,9 @@ const { mapDBToModel, mapDBToModelSong } = require('../../utils/songs')
 
 class SongsService {
   constructor () {
-    this._pool = new Pool()
+    this._pool = new Pool({
+      connectionString: process.env.DATABASE_URL
+    })
   }
 
   async addSong ({ title, year, performer, genre, duration, albumId }) {

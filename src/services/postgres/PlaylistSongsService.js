@@ -8,7 +8,9 @@ const AuthorizationError = require('../../exceptions/AuthorizationError')
 
 class PlaylistSongsService {
   constructor (collaborationService) {
-    this._pool = new Pool()
+    this._pool = new Pool({
+      connectionString: process.env.DATABASE_URL
+    })
 
     this._collaborationService = collaborationService
   }

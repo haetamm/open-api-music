@@ -7,7 +7,9 @@ const { mapDBToModel } = require('../../utils/playlists')
 
 class PlaylistsService {
   constructor () {
-    this._pool = new Pool()
+    this._pool = new Pool({
+      connectionString: process.env.DATABASE_URL
+    })
   }
 
   async addPlaylist ({ name, owner }) {
