@@ -1,12 +1,16 @@
 const Joi = require('joi')
 
 const PostAuthenticationPayloadSchema = Joi.object({
-  username: Joi.string().required(),
+  email: Joi.string().required().email(),
   password: Joi.string().required()
 })
 
 const PutAuthenticationPayloadSchema = Joi.object({
   refreshToken: Joi.string().required()
+})
+
+const PostAuthenticationFirebasePayloadSchema = Joi.object({
+  idToken: Joi.string().required()
 })
 
 const DeleteAuthenticationPayloadSchema = Joi.object({
@@ -16,5 +20,6 @@ const DeleteAuthenticationPayloadSchema = Joi.object({
 module.exports = {
   PostAuthenticationPayloadSchema,
   PutAuthenticationPayloadSchema,
+  PostAuthenticationFirebasePayloadSchema,
   DeleteAuthenticationPayloadSchema
 }

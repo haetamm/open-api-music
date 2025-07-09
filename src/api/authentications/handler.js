@@ -1,11 +1,14 @@
+
 class AuthenticationsHandler {
-  constructor (authenticationsService, usersService, tokenManager, validator) {
+  constructor (authenticationsService, usersService, tokenManager, validator, admin) {
     this._authenticationsService = authenticationsService
     this._usersService = usersService
     this._tokenManager = tokenManager
     this._validator = validator
+    this._admin = admin
 
     this.postAuthenticationHandler = this.postAuthenticationHandler.bind(this)
+    this.postFirebaseAuthenticationHandler = this.postFirebaseAuthenticationHandler.bind(this)
     this.putAuthenticationHandler = this.putAuthenticationHandler.bind(this)
     this.deleteAuthenticationHandler = this.deleteAuthenticationHandler.bind(this)
   }
@@ -13,12 +16,45 @@ class AuthenticationsHandler {
   async postAuthenticationHandler (request, h) {
     this._validator.validatePostAuthenticationPaylod(request.payload)
 
-    const { username, password } = request.payload
+    const { email, password } = request.payload
 
-    const id = await this._usersService.verifyUserCredential(username, password)
+    const id = await this._usersService.verifyUserCredential(email, password)
 
     const accessToken = this._tokenManager.generateAccessToken({ id })
     const refreshToken = this._tokenManager.generateRefreshToken({ id })
+
+    await this._authenticationsService.addRefreshToken(refreshToken)
+
+    const response = h.response({
+      status: 'success',
+      message: 'Authentication berhasil ditambahkan',
+      data: {
+        accessToken,
+        refreshToken
+      }
+    })
+    response.code(201)
+    return response
+  }
+
+  async postFirebaseAuthenticationHandler (request, h) {
+    this._validator.validatePostAuthenticationFirebasePayload(request.payload)
+    const { idToken } = request.payload
+
+    const decodedToken = await this._admin.auth().verifyIdToken(idToken)
+    const { email } = decodedToken
+
+    let userId = await this._usersService.getUserIdByEmail(email)
+    if (!userId) {
+      userId = await this._usersService.addUser({
+        email,
+        password: 'firebase-auth',
+        fullname: decodedToken.name || email.split('@')[0]
+      })
+    }
+
+    const accessToken = this._tokenManager.generateAccessToken({ id: userId })
+    const refreshToken = this._tokenManager.generateRefreshToken({ id: userId })
 
     await this._authenticationsService.addRefreshToken(refreshToken)
 

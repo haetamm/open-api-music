@@ -5,6 +5,11 @@ const routes = (handler) => [
     handler: handler.postAuthenticationHandler
   },
   {
+    method: 'POST',
+    path: '/authentications/google',
+    handler: handler.postFirebaseAuthenticationHandler
+  },
+  {
     method: 'PUT',
     path: '/authentications',
     handler: handler.putAuthenticationHandler

@@ -59,6 +59,9 @@ const LikesService = require('./services/postgres/LikesService')
 // redis
 const CacheService = require('./services/redis/CacheService')
 
+// firebase
+const admin = require('./services/firebase/firebaseAdmin')
+
 const ClientError = require('./exceptions/ClientError')
 
 const init = async () => {
@@ -138,7 +141,8 @@ const init = async () => {
         authenticationsService,
         usersService,
         tokenManager: TokenManager,
-        validator: AuthenticationsValidator
+        validator: AuthenticationsValidator,
+        admin
       }
     },
     {

@@ -1,6 +1,6 @@
 exports.up = pgm => {
   // membuat playlist baru.
-  pgm.sql("INSERT INTO users(id, username, password, fullname) VALUES ('old_playlists', 'old_playlists', 'old_playlists', 'old_playlists')")
+  pgm.sql("INSERT INTO users(id, email, password, fullname) VALUES ('old_playlists', 'old_playlists', 'old_playlists', 'old_playlists')")
 
   // mengubah nilai owner pada note yang owner-nya bernilai NULL
   pgm.sql("UPDATE playlists SET owner = 'old_playlists' WHERE owner IS NULL")

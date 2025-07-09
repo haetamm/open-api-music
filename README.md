@@ -1,9 +1,10 @@
 # open-api-music
 
-- copy __.env.example__ file to __.env__ and edit database credentials there
-- create database postgres : __CREATE DATABASE openmusic;__
+### Frontend => [here](https://github.com/haetamm/musweb)
 
-- __npm install__
-- __npm run migrate__
-- __npm run start-dev__
+- copy **.env.example** file to **.env** and edit database credentials there
+- create database postgres : **CREATE DATABASE openmusic;**
 
+- **npm install**
+- **npm run migrate**
+- **npm run start-dev**

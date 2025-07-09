@@ -1,6 +1,7 @@
 const {
   PostAuthenticationPayloadSchema,
   PutAuthenticationPayloadSchema,
+  PostAuthenticationFirebasePayloadSchema,
   DeleteAuthenticationPayloadSchema
 } = require('./schema')
 const InvariantError = require('../../exceptions/InvariantError')
@@ -14,6 +15,12 @@ const AuthenticationsValidator = {
   },
   validatePutAuthenticationPayload: (payload) => {
     const validationResult = PutAuthenticationPayloadSchema.validate(payload)
+    if (validationResult.error) {
+      throw new InvariantError(validationResult.error.message)
+    }
+  },
+  validatePostAuthenticationFirebasePayload: (payload) => {
+    const validationResult = PostAuthenticationFirebasePayloadSchema.validate(payload)
     if (validationResult.error) {
       throw new InvariantError(validationResult.error.message)
     }

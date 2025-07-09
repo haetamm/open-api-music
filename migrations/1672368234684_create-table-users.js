@@ -4,7 +4,7 @@ exports.up = pgm => {
       type: 'VARCHAR(50)',
       primaryKey: true
     },
-    username: {
+    email: {
       type: 'VARCHAR(50)',
       unique: true,
       notNull: true
