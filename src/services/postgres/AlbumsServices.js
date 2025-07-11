@@ -3,6 +3,7 @@ const { Pool } = require('pg')
 const InvariantError = require('../../exceptions/InvariantError')
 const NotFoundError = require('../../exceptions/NotFoundError')
 const { mapDBToModel, mapSongToModel } = require('../../utils/albums')
+const AuthorizationError = require('../../exceptions/AuthorizationError')
 
 class AlbumsService {
   constructor () {
@@ -11,13 +12,13 @@ class AlbumsService {
     })
   }
 
-  async addAlbum ({ name, year, coverUrl }) {
+  async addAlbum ({ name, year, coverUrl, uploader }) {
     const i = nanoid(16)
     const id = `album-${i}`
 
     const query = {
-      text: 'INSERT INTO albums VALUES($1, $2, $3, $4) RETURNING id',
-      values: [id, name, year, coverUrl]
+      text: 'INSERT INTO albums VALUES($1, $2, $3, $4, $5) RETURNING id',
+      values: [id, name, year, coverUrl, uploader]
     }
 
     const result = await this._pool.query(query)
@@ -27,6 +28,16 @@ class AlbumsService {
     }
 
     return result.rows[0].id
+  }
+
+  async getAlbumsByUploader (uploader) {
+    const query = {
+      text: 'SELECT * FROM albums WHERE uploader = $1',
+      values: [uploader]
+    }
+
+    const result = await this._pool.query(query)
+    return result.rows.map(mapDBToModel)
   }
 
   async getAlbumById (id) {
@@ -88,6 +99,24 @@ class AlbumsService {
     }
 
     await this._pool.query(query)
+  }
+
+  async verifyAlbumUploader (id, userId) {
+    const query = {
+      text: 'SELECT uploader FROM albums WHERE id = $1',
+      values: [id]
+    }
+
+    const result = await this._pool.query(query)
+
+    if (!result.rowCount) {
+      throw new NotFoundError('Album tidak ditemukan')
+    }
+
+    const album = result.rows[0]
+    if (album.uploader !== userId) {
+      throw new AuthorizationError('Anda tidak berhak mengakses resource ini')
+    }
   }
 }
 

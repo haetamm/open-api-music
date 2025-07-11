@@ -4,6 +4,7 @@ class AlbumsHandler {
     this._validator = validator
 
     this.postAlbumHandler = this.postAlbumHandler.bind(this)
+    this.getAlbumByUserCurrentHandler = this.getAlbumByUserCurrentHandler.bind(this)
     this.getAlbumByIdHandler = this.getAlbumByIdHandler.bind(this)
     this.putAlbumByIdHandler = this.putAlbumByIdHandler.bind(this)
     this.deleteAlbumByIdHandler = this.deleteAlbumByIdHandler.bind(this)
@@ -13,7 +14,8 @@ class AlbumsHandler {
     this._validator.validateAlbumPayload(request.payload)
     const { name, year } = request.payload
 
-    const albumId = await this._service.addAlbum({ name, year, coverUrl: null })
+    const { id: credentialId } = request.auth.credentials
+    const albumId = await this._service.addAlbum({ name, year, coverUrl: null, uploader: credentialId })
 
     const response = h.response({
       status: 'success',
@@ -23,6 +25,18 @@ class AlbumsHandler {
     })
     response.code(201)
     return response
+  }
+
+  async getAlbumByUserCurrentHandler (request) {
+    const { id: credentialId } = request.auth.credentials
+    const albums = await this._service.getAlbumsByUploader(credentialId)
+
+    return {
+      status: 'success',
+      data: {
+        albums
+      }
+    }
   }
 
   async getAlbumByIdHandler (request) {
@@ -45,6 +59,9 @@ class AlbumsHandler {
     this._validator.validateAlbumPayload(request.payload)
     const { name, year } = request.payload
     const { id } = request.params
+    const { id: credentialId } = request.auth.credentials
+
+    await this._service.verifyAlbumUploader(id, credentialId)
 
     await this._service.editAlbumById(id, { name, year })
 
@@ -56,6 +73,9 @@ class AlbumsHandler {
 
   async deleteAlbumByIdHandler (request) {
     const { id } = request.params
+    const { id: credentialId } = request.auth.credentials
+
+    await this._service.verifyAlbumUploader(id, credentialId)
 
     await this._service.deletAlbumById(id)
     return {

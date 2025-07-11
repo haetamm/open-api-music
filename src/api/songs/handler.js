@@ -4,6 +4,7 @@ class SongsHandler {
     this._validator = validator
 
     this.postSongHandler = this.postSongHandler.bind(this)
+    this.getSongsByUserCurrentHandler = this.getSongsByUserCurrentHandler.bind(this)
     this.getSongsHandler = this.getSongsHandler.bind(this)
     this.getSongByIdHendler = this.getSongByIdHendler.bind(this)
     this.putSongByIdHendler = this.putSongByIdHendler.bind(this)
@@ -14,7 +15,8 @@ class SongsHandler {
     this._validator.validateSongPayload(request.payload)
     const { title, year, performer, genre, duration, albumId } = request.payload
 
-    const songId = await this._service.addSong({ title, year, performer, genre, duration, albumId })
+    const { id: credentialId } = request.auth.credentials
+    const songId = await this._service.addSong({ title, year, performer, genre, duration, albumId, uploader: credentialId })
 
     const response = h.response({
       status: 'success',
@@ -24,6 +26,18 @@ class SongsHandler {
     })
     response.code(201)
     return response
+  }
+
+  async getSongsByUserCurrentHandler (request) {
+    const { id: credentialId } = request.auth.credentials
+    const albums = await this._service.getSongsByUploader(credentialId)
+
+    return {
+      status: 'success',
+      data: {
+        albums
+      }
+    }
   }
 
   async getSongsHandler (request) {
@@ -55,6 +69,9 @@ class SongsHandler {
     const { title, year, performer, genre, duration } = request.payload
     const { id } = request.params
 
+    const { id: credentialId } = request.auth.credentials
+    await this._service.verifySongUploader(id, credentialId)
+
     await this._service.editSongById(id, { title, year, performer, genre, duration })
 
     return {
@@ -65,6 +82,9 @@ class SongsHandler {
 
   async deleteSongByIdHendler (request) {
     const { id } = request.params
+
+    const { id: credentialId } = request.auth.credentials
+    await this._service.verifySongUploader(id, credentialId)
 
     await this._service.deleteSongById(id)
     return {
