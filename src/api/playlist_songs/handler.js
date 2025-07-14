@@ -33,14 +33,16 @@ class PlaylistSongsHandler {
 
   async getPlaylistSongsHandler (request) {
     const { id } = request.params
-    const { id: credentialId } = request.auth.credentials
 
-    await this._service.verifyPlaylistAccess(id, credentialId)
-
-    const playlist = await this._service.getPlaylistSongs(id)
+    const playlist = await this._service.getPlaylistDetail(id)
     const songs = await this._service.getSongsInPlaylist(id)
+    const likes = await this._service.getPlaylistLikes(id)
+    const collaborations = await this._service.getPlaylistCollaborations(id)
 
     playlist.songs = songs
+    playlist.likes = likes
+    playlist.collaborations = collaborations
+
     return {
       status: 'success',
       data: {

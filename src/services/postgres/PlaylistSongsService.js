@@ -8,9 +8,13 @@ const AuthorizationError = require('../../exceptions/AuthorizationError')
 
 class PlaylistSongsService {
   constructor (collaborationService) {
-    this._pool = new Pool({
-      connectionString: process.env.DATABASE_URL
-    })
+    // supabase
+    // this._pool = new Pool({
+    //   connectionString: process.env.DATABASE_URL
+    // })
+
+    // db
+    this._pool = new Pool()
 
     this._collaborationService = collaborationService
   }
@@ -45,28 +49,79 @@ class PlaylistSongsService {
     }
   }
 
-  async getPlaylistSongs (playlistId) {
+  async getPlaylistDetail (id) {
     const query = {
-      text: `SELECT playlists.*, users.username 
-        FROM playlists 
-        JOIN users ON users.id = playlists.owner
-        WHERE playlists.id = $1`,
-      values: [playlistId]
+      text: `
+      SELECT 
+        playlists.id,
+        playlists.title,
+        users.fullname,
+        COUNT(ps.song_id)::INTEGER AS song_count,
+        COALESCE(SUM(s.duration), 0) AS total_duration
+      FROM playlists
+      JOIN users ON users.id = playlists.owner
+      LEFT JOIN playlist_songs ps ON ps.playlist_id = playlists.id
+      LEFT JOIN songs s ON s.id = ps.song_id
+      WHERE playlists.id = $1
+      GROUP BY playlists.id, playlists.title, users.fullname`,
+      values: [id]
     }
+
     const result = await this._pool.query(query)
+    if (!result.rows.length) {
+      throw new NotFoundError('Playlist tidak ditemukan')
+    }
+
     return result.rows.map(mapDBToModel)[0]
   }
 
   async getSongsInPlaylist (id) {
     const query = {
-      text: `SELECT playlist_songs.*, songs.*
-        FROM playlist_songs
-        JOIN songs ON songs.id = playlist_songs.song_id
-        WHERE playlist_id = $1`,
+      text: `
+      SELECT songs.id, songs.title, songs.performer, songs.duration, songs.cover_url
+      FROM playlist_songs
+      JOIN songs ON songs.id = playlist_songs.song_id
+      WHERE playlist_songs.playlist_id = $1`,
       values: [id]
     }
+
     const result = await this._pool.query(query)
     return result.rows.map(mapDBToModelSong)
+  }
+
+  async getPlaylistLikes (id) {
+    const query = {
+      text: `
+      SELECT users.id AS user_id, users.fullname
+      FROM user_playlist_likes
+      JOIN users ON users.id = user_playlist_likes.user_id
+      WHERE user_playlist_likes.playlist_id = $1`,
+      values: [id]
+    }
+
+    const result = await this._pool.query(query)
+
+    return result.rows.map(({ user_id, fullname }) => ({
+      userId: user_id,
+      fullname
+    }))
+  }
+
+  async getPlaylistCollaborations (id) {
+    const query = {
+      text: `
+      SELECT users.id AS user_id, users.fullname
+      FROM collaborations
+      JOIN users ON users.id = collaborations.user_id
+      WHERE collaborations.playlist_id = $1`,
+      values: [id]
+    }
+
+    const result = await this._pool.query(query)
+    return result.rows.map(({ user_id, fullname }) => ({
+      userId: user_id,
+      fullname
+    }))
   }
 
   async deletePlaylistSong ({ songId, id, userId }) {

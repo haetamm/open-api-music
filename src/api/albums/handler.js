@@ -4,7 +4,7 @@ class AlbumsHandler {
     this._validator = validator
 
     this.postAlbumHandler = this.postAlbumHandler.bind(this)
-    this.getAlbumByUserCurrentHandler = this.getAlbumByUserCurrentHandler.bind(this)
+    this.getAlbumByCurrentUserHandler = this.getAlbumByCurrentUserHandler.bind(this)
     this.getAlbumByIdHandler = this.getAlbumByIdHandler.bind(this)
     this.putAlbumByIdHandler = this.putAlbumByIdHandler.bind(this)
     this.deleteAlbumByIdHandler = this.deleteAlbumByIdHandler.bind(this)
@@ -12,10 +12,10 @@ class AlbumsHandler {
 
   async postAlbumHandler (request, h) {
     this._validator.validateAlbumPayload(request.payload)
-    const { name, year } = request.payload
+    const { title, artist, year } = request.payload
 
     const { id: credentialId } = request.auth.credentials
-    const albumId = await this._service.addAlbum({ name, year, coverUrl: null, uploader: credentialId })
+    const albumId = await this._service.addAlbum({ title, artist, year, coverUrl: null, uploader: credentialId })
 
     const response = h.response({
       status: 'success',
@@ -27,7 +27,7 @@ class AlbumsHandler {
     return response
   }
 
-  async getAlbumByUserCurrentHandler (request) {
+  async getAlbumByCurrentUserHandler (request) {
     const { id: credentialId } = request.auth.credentials
     const albums = await this._service.getAlbumsByUploader(credentialId)
 
@@ -44,8 +44,6 @@ class AlbumsHandler {
 
     const album = await this._service.getAlbumById(id)
     const songs = await this._service.getSongByAlbumId(id)
-    const coverUrl = album.coverUrl === undefined ? null : album.coverUrl
-    album.coverUrl = coverUrl
     album.songs = songs
     return {
       status: 'success',
@@ -57,13 +55,13 @@ class AlbumsHandler {
 
   async putAlbumByIdHandler (request) {
     this._validator.validateAlbumPayload(request.payload)
-    const { name, year } = request.payload
+    const { title, artist, year } = request.payload
     const { id } = request.params
     const { id: credentialId } = request.auth.credentials
 
     await this._service.verifyAlbumUploader(id, credentialId)
 
-    await this._service.editAlbumById(id, { name, year })
+    await this._service.editAlbumById(id, { title, artist, year })
 
     return {
       status: 'success',

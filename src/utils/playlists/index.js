@@ -1,23 +1,27 @@
 const mapDBToModel = ({
   id,
-  name,
-  username
+  title,
+  fullname,
+  song_count,
+  total_duration
 }) => ({
   id,
-  name,
-  username
+  title,
+  owner: fullname,
+  songCount: song_count,
+  totalDuration: total_duration
 })
 
 const mapDbActivitiesToModel = ({
-  username,
   title,
   action,
-  time
+  time,
+  fullname
 }) => ({
-  username,
   title,
   action,
-  time
+  time,
+  fullname
 
 })
 

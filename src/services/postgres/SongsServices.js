@@ -2,23 +2,27 @@ const { nanoid } = require('nanoid')
 const { Pool } = require('pg')
 const InvariantError = require('../../exceptions/InvariantError')
 const NotFoundError = require('../../exceptions/NotFoundError')
-const { mapDBToModel, mapDBToModelSong } = require('../../utils/songs')
+const { mapDBToModelSong } = require('../../utils/songs')
 const AuthorizationError = require('../../exceptions/AuthorizationError')
 
 class SongsService {
   constructor () {
-    this._pool = new Pool({
-      connectionString: process.env.DATABASE_URL
-    })
+    // supabase
+    // this._pool = new Pool({
+    //   connectionString: process.env.DATABASE_URL
+    // })
+
+    // db
+    this._pool = new Pool()
   }
 
-  async addSong ({ title, year, performer, genre, duration, albumId, uploader }) {
+  async addSong ({ title, year, performer, genre, duration, albumId, coverUrl, uploader }) {
     const i = nanoid(16)
     const id = `song-${i}`
 
     const query = {
-      text: 'INSERT INTO songs VALUES($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id',
-      values: [id, title, year, performer, genre, duration, albumId, uploader]
+      text: 'INSERT INTO songs VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id',
+      values: [id, title, year, performer, genre, duration, albumId, coverUrl, uploader]
     }
 
     const result = await this._pool.query(query)
@@ -37,7 +41,22 @@ class SongsService {
     }
 
     const result = await this._pool.query(query)
-    return result.rows.map(mapDBToModel)
+    return result.rows.map(mapDBToModelSong)
+  }
+
+  async getSongsLikedByCurrentUser (userId) {
+    const query = {
+      text: `
+      SELECT songs.*
+      FROM songs
+      JOIN user_song_likes ON songs.id = user_song_likes.song_id
+      WHERE user_song_likes.user_id = $1
+    `,
+      values: [userId]
+    }
+
+    const result = await this._pool.query(query)
+    return result.rows.map(mapDBToModelSong)
   }
 
   async getSongs (title, performer) {
@@ -59,7 +78,21 @@ class SongsService {
 
   async getSongById (id) {
     const query = {
-      text: 'SELECT * FROM songs WHERE id = $1',
+      text: `
+          SELECT 
+            s.*,
+            u.fullname AS uploader_name,
+            a.id AS album_id,
+            a.title AS album_title,
+            a.year AS album_year,
+            a.cover_url AS album_cover,
+            ua.fullname AS album_uploader_name
+          FROM songs s
+          LEFT JOIN users u ON s.uploader = u.id
+          LEFT JOIN albums a ON s.album_id = a.id
+          LEFT JOIN users ua ON a.uploader = ua.id
+          WHERE s.id = $1
+        `,
       values: [id]
     }
 
@@ -69,7 +102,25 @@ class SongsService {
       throw new NotFoundError('Lagu tidak ditemukan')
     }
 
-    return result.rows.map(mapDBToModel)[0]
+    return result.rows[0]
+  }
+
+  async getSongLikes (id) {
+    const query = {
+      text: `
+        SELECT u.id AS user_id, u.fullname 
+        FROM user_song_likes usl
+        JOIN users u ON usl.user_id = u.id
+        WHERE usl.song_id = $1
+      `,
+      values: [id]
+    }
+
+    const result = await this._pool.query(query)
+    return result.rows.map(({ user_id, fullname }) => ({
+      userId: user_id,
+      fullname
+    }))
   }
 
   async editSongById (id, { title, year, performer, genre, duration }) {

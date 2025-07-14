@@ -10,7 +10,7 @@ const routes = (handler) => [
   {
     method: 'GET',
     path: '/albums/me',
-    handler: handler.getAlbumByUserCurrentHandler,
+    handler: handler.getAlbumByCurrentUserHandler,
     options: {
       auth: 'openmusic_jwt'
     }

@@ -2,23 +2,27 @@ const { nanoid } = require('nanoid')
 const { Pool } = require('pg')
 const InvariantError = require('../../exceptions/InvariantError')
 const NotFoundError = require('../../exceptions/NotFoundError')
-const { mapDBToModel, mapSongToModel } = require('../../utils/albums')
+const { mapDBToModel, mapAlbumToModel } = require('../../utils/albums')
 const AuthorizationError = require('../../exceptions/AuthorizationError')
 
 class AlbumsService {
   constructor () {
-    this._pool = new Pool({
-      connectionString: process.env.DATABASE_URL
-    })
+    // supabase
+    // this._pool = new Pool({
+    //   connectionString: process.env.DATABASE_URL
+    // })
+
+    // db
+    this._pool = new Pool()
   }
 
-  async addAlbum ({ name, year, coverUrl, uploader }) {
+  async addAlbum ({ title, artist, year, coverUrl, uploader }) {
     const i = nanoid(16)
     const id = `album-${i}`
 
     const query = {
-      text: 'INSERT INTO albums VALUES($1, $2, $3, $4, $5) RETURNING id',
-      values: [id, name, year, coverUrl, uploader]
+      text: 'INSERT INTO albums VALUES($1, $2, $3, $4, $5, $6) RETURNING id',
+      values: [id, title, artist, year, coverUrl, uploader]
     }
 
     const result = await this._pool.query(query)
@@ -32,7 +36,21 @@ class AlbumsService {
 
   async getAlbumsByUploader (uploader) {
     const query = {
-      text: 'SELECT * FROM albums WHERE uploader = $1',
+      text: `
+        SELECT
+          a.id,
+          a.title,
+          a.artist,
+          a.year,
+          a.cover_url,
+          COUNT(s.id) AS song_count,
+          COALESCE(SUM(s.duration), 0) AS total_duration
+        FROM albums a
+        LEFT JOIN songs s ON s.album_id = a.id
+        WHERE a.uploader = $1
+        GROUP BY a.id
+        ORDER BY a.year DESC
+      `,
       values: [uploader]
     }
 
@@ -42,7 +60,20 @@ class AlbumsService {
 
   async getAlbumById (id) {
     const query = {
-      text: 'SELECT * FROM albums WHERE id = $1',
+      text: `
+          SELECT
+            a.id,
+            a.title,
+            a.artist,
+            a.year,
+            a.cover_url,
+            COUNT(s.id) AS song_count,
+            COALESCE(SUM(s.duration), 0) AS total_duration
+          FROM albums a
+          LEFT JOIN songs s ON s.album_id = a.id
+          WHERE a.id = $1
+          GROUP BY a.id
+        `,
       values: [id]
     }
     const result = await this._pool.query(query)
@@ -62,14 +93,14 @@ class AlbumsService {
     }
     const result = await this._pool.query(query)
 
-    const songs = result.rows.map(mapSongToModel)
+    const songs = result.rows.map(mapAlbumToModel)
     return songs
   }
 
-  async editAlbumById (id, { name, year }) {
+  async editAlbumById (id, { title, artist, year }) {
     const query = {
-      text: 'UPDATE albums SET name = $1, year = $2 WHERE id = $3 RETURNING id',
-      values: [name, year, id]
+      text: 'UPDATE albums SET title = $1, artist = $2, year = $3 WHERE id = $3 RETURNING id',
+      values: [title, artist, year, id]
     }
 
     const result = await this._pool.query(query)

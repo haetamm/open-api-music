@@ -2,12 +2,16 @@ const { nanoid } = require('nanoid')
 const { Pool } = require('pg')
 
 class LikesService {
-  constructor (cacheService) {
-    this._pool = new Pool({
-      connectionString: process.env.DATABASE_URL
-    })
+  constructor () {
+    // supabase
+    // this._pool = new Pool({
+    //   connectionString: process.env.DATABASE_URL
+    // })
 
-    this._cacheService = cacheService
+    // db
+    this._pool = new Pool()
+
+    // this._cacheService = cacheService
   }
 
   async addLike (albumId, userId) {
@@ -42,29 +46,29 @@ class LikesService {
       this.deleteLike(albumId, userId)
     }
 
-    await this._cacheService.delete(`likes:${albumId}`)
+    // await this._cacheService.delete(`likes:${albumId}`)
     return result.rows
   }
 
   async countLike (id) {
-    try {
-      const result = await this._cacheService.get(`likes:${id}`)
-      const count = JSON.parse(result)
-      const cache = true
-      return ({ count, cache })
-    } catch (error) {
-      const query = {
-        text: 'SELECT * FROM user_album_likes WHERE album_id = $1',
-        values: [id]
-      }
-      const result = await this._pool.query(query)
-
-      await this._cacheService.set(`likes:${id}`, JSON.stringify(result.rows.length))
-
-      const count = result.rows.length
-      const cache = false
-      return ({ count, cache })
+    // try {
+    //   const result = await this._cacheService.get(`likes:${id}`)
+    //   const count = JSON.parse(result)
+    //   const cache = true
+    //   return ({ count, cache })
+    // } catch (error) {
+    const query = {
+      text: 'SELECT * FROM user_album_likes WHERE album_id = $1',
+      values: [id]
     }
+    const result = await this._pool.query(query)
+
+    // await this._cacheService.set(`likes:${id}`, JSON.stringify(result.rows.length))
+
+    const count = result.rows.length
+    const cache = false
+    return ({ count, cache })
+    // }
   }
 }
 

@@ -6,6 +6,7 @@ class PlaylistsHandler {
 
     this.postPlaylistHandler = this.postPlaylistHandler.bind(this)
     this.getPlaylistsHandler = this.getPlaylistsHandler.bind(this)
+    this.getPlaylistsLikedHandler = this.getPlaylistsLikedHandler.bind(this)
     this.deletePlaylistByIdHandler = this.deletePlaylistByIdHandler.bind(this)
   }
 
@@ -31,10 +32,19 @@ class PlaylistsHandler {
   async getPlaylistsHandler (request) {
     const { id: credentialId } = request.auth.credentials
 
-    const playlist = await this._service.getPlaylistId(credentialId)
-    const id = !playlist ? 'adkfdf' : playlist
+    const playlists = await this._service.getPlaylists(credentialId)
+    return {
+      status: 'success',
+      data: {
+        playlists
+      }
+    }
+  }
 
-    const playlists = await this._service.getPlaylists({ id, credentialId })
+  async getPlaylistsLikedHandler (request) {
+    const { id: credentialId } = request.auth.credentials
+    const playlists = await this._service.getPlaylistLiked(credentialId)
+
     return {
       status: 'success',
       data: {

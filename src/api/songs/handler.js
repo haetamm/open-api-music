@@ -1,10 +1,13 @@
+const { mapSongDBToModel } = require('../../utils/songs')
+
 class SongsHandler {
   constructor (service, validator) {
     this._service = service
     this._validator = validator
 
     this.postSongHandler = this.postSongHandler.bind(this)
-    this.getSongsByUserCurrentHandler = this.getSongsByUserCurrentHandler.bind(this)
+    this.getSongsByCurrentUserHandler = this.getSongsByCurrentUserHandler.bind(this)
+    this.getSongsLikedByCurrentUserHandler = this.getSongsLikedByCurrentUserHandler.bind(this)
     this.getSongsHandler = this.getSongsHandler.bind(this)
     this.getSongByIdHendler = this.getSongByIdHendler.bind(this)
     this.putSongByIdHendler = this.putSongByIdHendler.bind(this)
@@ -16,7 +19,7 @@ class SongsHandler {
     const { title, year, performer, genre, duration, albumId } = request.payload
 
     const { id: credentialId } = request.auth.credentials
-    const songId = await this._service.addSong({ title, year, performer, genre, duration, albumId, uploader: credentialId })
+    const songId = await this._service.addSong({ title, year, performer, genre, duration, albumId, coverUrl: null, uploader: credentialId })
 
     const response = h.response({
       status: 'success',
@@ -28,14 +31,26 @@ class SongsHandler {
     return response
   }
 
-  async getSongsByUserCurrentHandler (request) {
+  async getSongsByCurrentUserHandler (request) {
     const { id: credentialId } = request.auth.credentials
-    const albums = await this._service.getSongsByUploader(credentialId)
+    const songs = await this._service.getSongsByUploader(credentialId)
 
     return {
       status: 'success',
       data: {
-        albums
+        songs
+      }
+    }
+  }
+
+  async getSongsLikedByCurrentUserHandler (request) {
+    const { id: credentialId } = request.auth.credentials
+    const songs = await this._service.getSongsLikedByCurrentUser(credentialId)
+
+    return {
+      status: 'success',
+      data: {
+        songs
       }
     }
   }
@@ -52,16 +67,22 @@ class SongsHandler {
     }
   }
 
-  async getSongByIdHendler (request) {
+  async getSongByIdHendler (request, h) {
     const { id } = request.params
 
-    const song = await this._service.getSongById(id)
-    return {
+    // Ambil data terpisah dari service
+    const [songData, likes] = await Promise.all([
+      this._service.getSongById(id),
+      this._service.getSongLikes(id)
+    ])
+
+    // Gunakan mapper function
+    const song = mapSongDBToModel(songData, likes)
+
+    return h.response({
       status: 'success',
-      data: {
-        song
-      }
-    }
+      data: { song }
+    }).code(200)
   }
 
   async putSongByIdHendler (request) {

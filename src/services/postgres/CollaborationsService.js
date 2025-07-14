@@ -5,9 +5,13 @@ const InvariantError = require('../../exceptions/InvariantError')
 
 class CollaborationsService {
   constructor () {
-    this._pool = new Pool({
-      connectionString: process.env.DATABASE_URL
-    })
+    // supabase
+    // this._pool = new Pool({
+    //   connectionString: process.env.DATABASE_URL
+    // })
+
+    // db
+    this._pool = new Pool()
   }
 
   async addCollaboration (playlistId, userId) {

@@ -1,25 +1,33 @@
 const mapDBToModel = ({
   id,
-  name,
+  title,
+  artist,
   year,
-  // eslint-disable-next-line camelcase
+  cover_url,
+  song_count,
+  total_duration
+}) => ({
+  id,
+  title,
+  artist,
+  year,
+  coverUrl: cover_url,
+  songCount: song_count,
+  totalDuration: total_duration
+})
+
+const mapAlbumToModel = ({
+  id,
+  title,
+  performer,
+  duration,
   cover_url
 }) => ({
   id,
-  name,
-  year,
-  // eslint-disable-next-line camelcase
+  title,
+  performer,
+  duration,
   coverUrl: cover_url
 })
 
-const mapSongToModel = ({
-  id,
-  title,
-  performer
-}) => ({
-  id,
-  title,
-  performer
-})
-
-module.exports = { mapDBToModel, mapSongToModel }
+module.exports = { mapDBToModel, mapAlbumToModel }

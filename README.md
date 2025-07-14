@@ -7,4 +7,5 @@
 
 - **npm install**
 - **npm run migrate**
+- **node seeds**
 - **npm run start-dev**

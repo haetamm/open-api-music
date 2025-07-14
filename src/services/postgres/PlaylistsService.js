@@ -7,9 +7,13 @@ const { mapDBToModel } = require('../../utils/playlists')
 
 class PlaylistsService {
   constructor () {
-    this._pool = new Pool({
-      connectionString: process.env.DATABASE_URL
-    })
+    // supabase
+    // this._pool = new Pool({
+    //   connectionString: process.env.DATABASE_URL
+    // })
+
+    // db
+    this._pool = new Pool()
   }
 
   async addPlaylist ({ name, owner }) {
@@ -38,14 +42,42 @@ class PlaylistsService {
     return result.rows[0]
   }
 
-  async getPlaylists ({ id, credentialId }) {
-    const playlistId = typeof (id) === 'string' ? id : id.playlist_id
+  async getPlaylists (owner) {
     const query = {
-      text: `SELECT playlists.*, users.username
-      FROM playlists
-      JOIN users ON users.id = playlists.owner
-      WHERE playlists.id = $1 OR playlists.owner = $2`,
-      values: [playlistId, credentialId]
+      text: `SELECT 
+              p.*,
+              u.fullname,
+              COUNT(ps.song_id) AS song_count,
+              COALESCE(SUM(s.duration), 0) AS total_duration
+            FROM playlists p
+            JOIN users u ON u.id = p.owner
+            LEFT JOIN playlist_songs ps ON ps.playlist_id = p.id
+            LEFT JOIN songs s ON s.id = ps.song_id
+            WHERE p.owner = $1
+            GROUP BY p.id, u.fullname`,
+      values: [owner]
+    }
+
+    const result = await this._pool.query(query)
+    return result.rows.map(mapDBToModel)
+  }
+
+  async getPlaylistLiked (userId) {
+    const query = {
+      text: `SELECT 
+                p.*,
+                u.fullname,
+                COUNT(ps.song_id) AS song_count,
+                COALESCE(SUM(s.duration), 0) AS total_duration
+              FROM playlists p
+              JOIN users u ON u.id = p.owner
+              LEFT JOIN playlist_songs ps ON ps.playlist_id = p.id
+              LEFT JOIN songs s ON s.id = ps.song_id
+              JOIN user_playlist_likes upl ON p.id = upl.playlist_id
+              WHERE upl.user_id = $1
+              GROUP BY p.id, u.fullname
+            `,
+      values: [userId]
     }
 
     const result = await this._pool.query(query)

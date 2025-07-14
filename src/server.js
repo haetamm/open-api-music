@@ -57,7 +57,7 @@ const likes = require('./api/likes')
 const LikesService = require('./services/postgres/LikesService')
 
 // redis
-const CacheService = require('./services/redis/CacheService')
+// const CacheService = require('./services/redis/CacheService')
 
 // firebase
 const admin = require('./services/firebase/firebaseAdmin')
@@ -65,7 +65,7 @@ const admin = require('./services/firebase/firebaseAdmin')
 const ClientError = require('./exceptions/ClientError')
 
 const init = async () => {
-  const cacheService = new CacheService()
+  // const cacheService = new CacheService()
   const collaborationsService = new CollaborationsService()
   const albumsService = new AlbumsService()
   const songsService = new SongsService()
@@ -74,7 +74,8 @@ const init = async () => {
   const playlistsService = new PlaylistsService()
   const playlistSongsService = new PlaylistSongsService(collaborationsService)
   const storageService = new StorageService(path.resolve(__dirname, 'api/uploads/file/images'))
-  const likesService = new LikesService(cacheService)
+  const likesService = new LikesService()
+  // const likesService = new LikesService(cacheService)
 
   const server = Hapi.server({
     port: process.env.PORT,

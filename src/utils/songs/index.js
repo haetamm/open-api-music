@@ -1,29 +1,36 @@
-const mapDBToModel = ({
-  id,
-  title,
-  year,
-  performer,
-  genre,
-  duration,
-  albumId
-}) => ({
-  id,
-  title,
-  year,
-  performer,
-  genre,
-  duration,
-  albumId
+const mapSongDBToModel = (songData, likes = []) => ({
+  id: songData.id,
+  title: songData.title,
+  year: songData.year,
+  performer: songData.performer,
+  genre: songData.genre,
+  duration: songData.duration,
+  coverUrl: songData.cover_url,
+  uploader: songData.uploader_name,
+  likes,
+  album: songData.album_id
+    ? {
+        id: songData.album_id,
+        title: songData.album_title,
+        year: songData.album_year,
+        coverUrl: songData.album_cover,
+        uploader: songData.album_uploader_name
+      }
+    : null
 })
 
 const mapDBToModelSong = ({
   id,
   title,
-  performer
+  performer,
+  duration,
+  cover_url
 }) => ({
   id,
   title,
-  performer
+  performer,
+  duration,
+  coverUrl: cover_url
 })
 
-module.exports = { mapDBToModel, mapDBToModelSong }
+module.exports = { mapSongDBToModel, mapDBToModelSong }
