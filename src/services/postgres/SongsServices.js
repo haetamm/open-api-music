@@ -69,13 +69,13 @@ class SongsService {
   async getSongsLikedByCurrentUser (userId, offset, limit) {
     const query = {
       text: `
-        SELECT *
-        FROM songs 
-        JOIN user_song_likes ON songs.id = user_song_likes.song_id 
-        WHERE user_song_likes.user_id = $1 
-        ORDER BY songs.id 
-        OFFSET $2 LIMIT $3
-      `,
+      SELECT songs.id, songs.title, songs.performer, songs.duration, songs.cover_url
+      FROM songs 
+      JOIN user_song_likes ON songs.id = user_song_likes.song_id 
+      WHERE user_song_likes.user_id = $1 
+      ORDER BY songs.id 
+      OFFSET $2 LIMIT $3
+    `,
       values: [userId, offset, limit]
     }
     const result = await this._pool.query(query)
@@ -99,7 +99,7 @@ class SongsService {
   }
 
   async getSongs (title, offset, limit) {
-    let queryText = 'SELECT id, title, performer FROM songs'
+    let queryText = 'SELECT * FROM songs'
     const values = []
 
     if (title) {
