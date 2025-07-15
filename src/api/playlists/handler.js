@@ -1,3 +1,5 @@
+const { createPaginationResponse, validateAndCalculatePagination } = require('../../utils/pagination')
+
 class PlaylistsHandler {
   constructor (service, validator, playlistSongsService) {
     this._service = service
@@ -6,6 +8,7 @@ class PlaylistsHandler {
 
     this.postPlaylistHandler = this.postPlaylistHandler.bind(this)
     this.getPlaylistsHandler = this.getPlaylistsHandler.bind(this)
+    this.getPlaylistsByCurrentUserHandler = this.getPlaylistsByCurrentUserHandler.bind(this)
     this.getPlaylistsLikedHandler = this.getPlaylistsLikedHandler.bind(this)
     this.deletePlaylistByIdHandler = this.deletePlaylistByIdHandler.bind(this)
   }
@@ -29,28 +32,48 @@ class PlaylistsHandler {
     return response
   }
 
-  async getPlaylistsHandler (request) {
-    const { id: credentialId } = request.auth.credentials
+  async getPlaylistsHandler (request, h) {
+    const { page = 1, limit = 10, title } = request.query
+    const { page: validatedPage, limit: validatedLimit, offset } = validateAndCalculatePagination(page, limit)
 
-    const playlists = await this._service.getPlaylists(credentialId)
-    return {
-      status: 'success',
-      data: {
-        playlists
-      }
-    }
+    const total = await this._service.getPlaylistsCount(title)
+    const playlists = await this._service.getPlaylists(title, offset, validatedLimit)
+
+    return createPaginationResponse(h, {
+      total,
+      results: playlists,
+      resourceName: 'playlists'
+    }, validatedPage, validatedLimit)
   }
 
-  async getPlaylistsLikedHandler (request) {
+  async getPlaylistsByCurrentUserHandler (request, h) {
     const { id: credentialId } = request.auth.credentials
-    const playlists = await this._service.getPlaylistLiked(credentialId)
+    const { page = 1, limit = 10 } = request.query
+    const { page: validatedPage, limit: validatedLimit, offset } = validateAndCalculatePagination(page, limit)
 
-    return {
-      status: 'success',
-      data: {
-        playlists
-      }
-    }
+    const total = await this._service.getPlaylistsByUserCount(credentialId)
+    const playlists = await this._service.getPlaylistsByUser(credentialId, offset, validatedLimit)
+
+    return createPaginationResponse(h, {
+      total,
+      results: playlists,
+      resourceName: 'playlists'
+    }, validatedPage, validatedLimit)
+  }
+
+  async getPlaylistsLikedHandler (request, h) {
+    const { id: credentialId } = request.auth.credentials
+    const { page = 1, limit = 10 } = request.query
+    const { page: validatedPage, limit: validatedLimit, offset } = validateAndCalculatePagination(page, limit)
+
+    const total = await this._service.getPlaylistsLikedCount(credentialId)
+    const playlists = await this._service.getPlaylistsLiked(credentialId, offset, validatedLimit)
+
+    return createPaginationResponse(h, {
+      total,
+      results: playlists,
+      resourceName: 'playlists'
+    }, validatedPage, validatedLimit)
   }
 
   async deletePlaylistByIdHandler (request) {

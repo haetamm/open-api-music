@@ -34,7 +34,16 @@ class AlbumsService {
     return result.rows[0].id
   }
 
-  async getAlbumsByUploader (uploader) {
+  async getAlbumsCountByUser (userId) {
+    const query = {
+      text: 'SELECT COUNT(*) FROM albums WHERE uploader = $1',
+      values: [userId]
+    }
+    const result = await this._pool.query(query)
+    return parseInt(result.rows[0].count)
+  }
+
+  async getAlbumsByUser (userId, offset, limit) {
     const query = {
       text: `
         SELECT
@@ -50,11 +59,61 @@ class AlbumsService {
         WHERE a.uploader = $1
         GROUP BY a.id
         ORDER BY a.year DESC
+        OFFSET $2 LIMIT $3
       `,
-      values: [uploader]
+      values: [userId, offset, limit]
+    }
+    const result = await this._pool.query(query)
+    return result.rows.map(mapDBToModel)
+  }
+
+  async getAlbumsCount (title) {
+    let queryText = 'SELECT COUNT(*) FROM albums'
+    const values = []
+
+    if (title) {
+      queryText += ' WHERE title ILIKE $1'
+      values.push(`%${title}%`)
     }
 
-    const result = await this._pool.query(query)
+    const result = await this._pool.query({
+      text: queryText,
+      values
+    })
+    return parseInt(result.rows[0].count)
+  }
+
+  async getAlbums (title, offset, limit) {
+    let queryText = `
+      SELECT
+        a.id,
+        a.title,
+        a.artist,
+        a.year,
+        a.cover_url,
+        COUNT(s.id) AS song_count,
+        COALESCE(SUM(s.duration), 0) AS total_duration
+      FROM albums a
+      LEFT JOIN songs s ON s.album_id = a.id
+    `
+    const values = []
+
+    if (title) {
+      queryText += ' WHERE a.title ILIKE $1'
+      values.push(`%${title}%`)
+    }
+
+    queryText += `
+      GROUP BY a.id
+      ORDER BY a.year DESC
+      OFFSET $${values.length + 1} LIMIT $${values.length + 2}
+    `
+    values.push(offset, limit)
+
+    const result = await this._pool.query({
+      text: queryText,
+      values
+    })
     return result.rows.map(mapDBToModel)
   }
 

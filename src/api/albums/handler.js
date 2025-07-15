@@ -1,3 +1,5 @@
+const { createPaginationResponse, validateAndCalculatePagination } = require('../../utils/pagination')
+
 class AlbumsHandler {
   constructor (service, validator) {
     this._service = service
@@ -5,6 +7,7 @@ class AlbumsHandler {
 
     this.postAlbumHandler = this.postAlbumHandler.bind(this)
     this.getAlbumByCurrentUserHandler = this.getAlbumByCurrentUserHandler.bind(this)
+    this.getAlbumsHandler = this.getAlbumsHandler.bind(this)
     this.getAlbumByIdHandler = this.getAlbumByIdHandler.bind(this)
     this.putAlbumByIdHandler = this.putAlbumByIdHandler.bind(this)
     this.deleteAlbumByIdHandler = this.deleteAlbumByIdHandler.bind(this)
@@ -27,16 +30,33 @@ class AlbumsHandler {
     return response
   }
 
-  async getAlbumByCurrentUserHandler (request) {
+  async getAlbumByCurrentUserHandler (request, h) {
     const { id: credentialId } = request.auth.credentials
-    const albums = await this._service.getAlbumsByUploader(credentialId)
+    const { page = 1, limit = 10 } = request.query
+    const { page: validatedPage, limit: validatedLimit, offset } = validateAndCalculatePagination(page, limit)
 
-    return {
-      status: 'success',
-      data: {
-        albums
-      }
-    }
+    const total = await this._service.getAlbumsCountByUser(credentialId)
+    const albums = await this._service.getAlbumsByUser(credentialId, offset, validatedLimit)
+
+    return createPaginationResponse(h, {
+      total,
+      results: albums,
+      resourceName: 'albums'
+    }, validatedPage, validatedLimit)
+  }
+
+  async getAlbumsHandler (request, h) {
+    const { page = 1, limit = 10, title } = request.query
+    const { page: validatedPage, limit: validatedLimit, offset } = validateAndCalculatePagination(page, limit)
+
+    const total = await this._service.getAlbumsCount(title)
+    const albums = await this._service.getAlbums(title, offset, validatedLimit)
+
+    return createPaginationResponse(h, {
+      total,
+      results: albums,
+      resourceName: 'albums'
+    }, validatedPage, validatedLimit)
   }
 
   async getAlbumByIdHandler (request) {

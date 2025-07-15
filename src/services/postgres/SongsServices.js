@@ -34,46 +34,87 @@ class SongsService {
     return result.rows[0].id
   }
 
-  async getSongsByUploader (uploader) {
+  async getSongsCountByUser (userId) {
     const query = {
-      text: 'SELECT * FROM songs WHERE uploader = $1',
-      values: [uploader]
-    }
-
-    const result = await this._pool.query(query)
-    return result.rows.map(mapDBToModelSong)
-  }
-
-  async getSongsLikedByCurrentUser (userId) {
-    const query = {
-      text: `
-      SELECT songs.*
-      FROM songs
-      JOIN user_song_likes ON songs.id = user_song_likes.song_id
-      WHERE user_song_likes.user_id = $1
-    `,
+      text: 'SELECT COUNT(*) FROM songs WHERE uploader = $1',
       values: [userId]
     }
+    const result = await this._pool.query(query)
+    return parseInt(result.rows[0].count)
+  }
 
+  async getSongsByUser (userId, offset, limit) {
+    const query = {
+      text: 'SELECT * FROM songs WHERE uploader = $1 ORDER BY id OFFSET $2 LIMIT $3',
+      values: [userId, offset, limit]
+    }
     const result = await this._pool.query(query)
     return result.rows.map(mapDBToModelSong)
   }
 
-  async getSongs (title, performer) {
-    if (title && !performer) {
-      const result = await this._pool.query(`SELECT * FROM songs WHERE title LIKE '%${title.charAt(0).toUpperCase() + title.slice(1)}%'`)
-      console.log(result.rows)
-      return result.rows.map(mapDBToModelSong)
-    } else if (!title && performer) {
-      const result = await this._pool.query(`SELECT * FROM songs WHERE performer LIKE '%${performer.charAt(0).toUpperCase() + performer.slice(1)}%'`)
-      return result.rows.map(mapDBToModelSong)
-    } else if (title && performer) {
-      const result = await this._pool.query(`SELECT * FROM songs WHERE title LIKE '%${title.charAt(0).toUpperCase() + title.slice(1)}%' AND performer LIKE '%${performer.charAt(0).toUpperCase() + performer.slice(1)}%'`)
-      return result.rows.map(mapDBToModelSong)
-    } else {
-      const result = await this._pool.query('SELECT * FROM songs')
-      return result.rows.map(mapDBToModelSong)
+  async getSongsCountLikedByUser (userId) {
+    const query = {
+      text: `
+        SELECT COUNT(*) 
+        FROM songs 
+        JOIN user_song_likes ON songs.id = user_song_likes.song_id 
+        WHERE user_song_likes.user_id = $1
+      `,
+      values: [userId]
     }
+    const result = await this._pool.query(query)
+    return parseInt(result.rows[0].count)
+  }
+
+  async getSongsLikedByCurrentUser (userId, offset, limit) {
+    const query = {
+      text: `
+        SELECT *
+        FROM songs 
+        JOIN user_song_likes ON songs.id = user_song_likes.song_id 
+        WHERE user_song_likes.user_id = $1 
+        ORDER BY songs.id 
+        OFFSET $2 LIMIT $3
+      `,
+      values: [userId, offset, limit]
+    }
+    const result = await this._pool.query(query)
+    return result.rows.map(mapDBToModelSong)
+  }
+
+  async getSongsCount (title) {
+    let queryText = 'SELECT COUNT(*) FROM songs'
+    const values = []
+
+    if (title) {
+      queryText += ' WHERE title ILIKE $1'
+      values.push(`%${title}%`)
+    }
+
+    const result = await this._pool.query({
+      text: queryText,
+      values
+    })
+    return parseInt(result.rows[0].count)
+  }
+
+  async getSongs (title, offset, limit) {
+    let queryText = 'SELECT id, title, performer FROM songs'
+    const values = []
+
+    if (title) {
+      queryText += ' WHERE title ILIKE $1'
+      values.push(`%${title}%`)
+    }
+
+    queryText += ` ORDER BY id OFFSET $${values.length + 1} LIMIT $${values.length + 2}`
+    values.push(offset, limit)
+
+    const result = await this._pool.query({
+      text: queryText,
+      values
+    })
+    return result.rows.map(mapDBToModelSong)
   }
 
   async getSongById (id) {

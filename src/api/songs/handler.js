@@ -1,4 +1,5 @@
 const { mapSongDBToModel } = require('../../utils/songs')
+const { createPaginationResponse, validateAndCalculatePagination } = require('../../utils/pagination')
 
 class SongsHandler {
   constructor (service, validator) {
@@ -31,40 +32,48 @@ class SongsHandler {
     return response
   }
 
-  async getSongsByCurrentUserHandler (request) {
+  async getSongsByCurrentUserHandler (request, h) {
     const { id: credentialId } = request.auth.credentials
-    const songs = await this._service.getSongsByUploader(credentialId)
+    const { page = 1, limit = 10 } = request.query
+    const { page: validatedPage, limit: validatedLimit, offset } = validateAndCalculatePagination(page, limit)
 
-    return {
-      status: 'success',
-      data: {
-        songs
-      }
-    }
+    const total = await this._service.getSongsCountByUser(credentialId)
+    const songs = await this._service.getSongsByUser(credentialId, offset, validatedLimit)
+
+    return createPaginationResponse(h, {
+      total,
+      results: songs,
+      resourceName: 'songs'
+    }, validatedPage, validatedLimit)
   }
 
-  async getSongsLikedByCurrentUserHandler (request) {
+  async getSongsLikedByCurrentUserHandler (request, h) {
     const { id: credentialId } = request.auth.credentials
-    const songs = await this._service.getSongsLikedByCurrentUser(credentialId)
+    const { page = 1, limit = 10 } = request.query
+    const { page: validatedPage, limit: validatedLimit, offset } = validateAndCalculatePagination(page, limit)
 
-    return {
-      status: 'success',
-      data: {
-        songs
-      }
-    }
+    const total = await this._service.getSongsCountLikedByUser(credentialId)
+    const songs = await this._service.getSongsLikedByCurrentUser(credentialId, offset, validatedLimit)
+
+    return createPaginationResponse(h, {
+      total,
+      results: songs,
+      resourceName: 'songs'
+    }, validatedPage, validatedLimit)
   }
 
-  async getSongsHandler (request) {
-    const { title, performer } = request.query
-    console.log(title)
-    const songs = await this._service.getSongs(title, performer)
-    return {
-      status: 'success',
-      data: {
-        songs
-      }
-    }
+  async getSongsHandler (request, h) {
+    const { page = 1, limit = 10, title } = request.query
+    const { page: validatedPage, limit: validatedLimit, offset } = validateAndCalculatePagination(page, limit)
+
+    const total = await this._service.getSongsCount(title)
+    const songs = await this._service.getSongs(title, offset, validatedLimit)
+
+    return createPaginationResponse(h, {
+      total,
+      results: songs,
+      resourceName: 'songs'
+    }, validatedPage, validatedLimit)
   }
 
   async getSongByIdHendler (request, h) {
