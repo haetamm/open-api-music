@@ -33,4 +33,20 @@ const mapDBToModelSong = ({
   coverUrl: cover_url
 })
 
-module.exports = { mapSongDBToModel, mapDBToModelSong }
+const mapDBToModelSongSearch = ({
+  id,
+  title,
+  performer,
+  duration,
+  cover_url,
+  likes_count
+}) => ({
+  id,
+  title,
+  performer,
+  duration,
+  coverUrl: cover_url,
+  likesCount: likes_count
+})
+
+module.exports = { mapSongDBToModel, mapDBToModelSong, mapDBToModelSongSearch }

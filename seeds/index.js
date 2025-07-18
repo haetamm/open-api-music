@@ -113,6 +113,19 @@ async function seedDatabase () {
       { userEmail: 'john@gmail.com', songId: 'song_adele_1' },
       { userEmail: 'john@gmail.com', songId: 'song_adele_2' },
       { userEmail: 'john@gmail.com', songId: 'song_adele_3' },
+      { userEmail: 'john@gmail.com', songId: 'song_adele_4' },
+      { userEmail: 'john@gmail.com', songId: 'song_adele_5' },
+      { userEmail: 'john@gmail.com', songId: 'song_adele_6' },
+      { userEmail: 'john@gmail.com', songId: 'song_adele_7' },
+      { userEmail: 'john@gmail.com', songId: 'song_adele_8' },
+      { userEmail: 'john@gmail.com', songId: 'song_adele_9' },
+      { userEmail: 'john@gmail.com', songId: 'song_adele_10' },
+      { userEmail: 'john@gmail.com', songId: 'song_adele_11' },
+      { userEmail: 'john@gmail.com', songId: 'song_adele_12' },
+      { userEmail: 'john@gmail.com', songId: 'song_adele_13' },
+      { userEmail: 'john@gmail.com', songId: 'song_adele_14' },
+      { userEmail: 'john@gmail.com', songId: 'song_adele_15' },
+
       { userEmail: 'john@gmail.com', songId: 'song_john_1' },
       { userEmail: 'john@gmail.com', songId: 'song_john_2' },
       { userEmail: 'john@gmail.com', songId: 'song_john_3' },
@@ -120,6 +133,19 @@ async function seedDatabase () {
       { userEmail: 'jane@gmail.com', songId: 'song_john_1' },
       { userEmail: 'jane@gmail.com', songId: 'song_john_2' },
       { userEmail: 'jane@gmail.com', songId: 'song_john_3' },
+      { userEmail: 'jane@gmail.com', songId: 'song_john_4' },
+      { userEmail: 'jane@gmail.com', songId: 'song_john_5' },
+      { userEmail: 'jane@gmail.com', songId: 'song_john_6' },
+      { userEmail: 'jane@gmail.com', songId: 'song_john_7' },
+      { userEmail: 'jane@gmail.com', songId: 'song_john_8' },
+      { userEmail: 'jane@gmail.com', songId: 'song_john_9' },
+      { userEmail: 'jane@gmail.com', songId: 'song_john_10' },
+      { userEmail: 'jane@gmail.com', songId: 'song_john_11' },
+      { userEmail: 'jane@gmail.com', songId: 'song_john_12' },
+      { userEmail: 'jane@gmail.com', songId: 'song_john_13' },
+      { userEmail: 'jane@gmail.com', songId: 'song_john_14' },
+      { userEmail: 'jane@gmail.com', songId: 'song_john_15' },
+
       { userEmail: 'jane@gmail.com', songId: 'song_adele_1' },
       { userEmail: 'jane@gmail.com', songId: 'song_adele_2' },
       { userEmail: 'jane@gmail.com', songId: 'song_adele_3' }
@@ -139,10 +165,39 @@ async function seedDatabase () {
 
     // Data playlists
     const playlists = [
+      // Original 4 (2 per user)
       { id: 'playlist_john_1', title: 'John\'s Favorite', owner: userIds['john@gmail.com'] },
       { id: 'playlist_john_2', title: 'Workout Mix', owner: userIds['john@gmail.com'] },
+      { id: 'playlist_john_3', title: 'Midnight Coding', owner: userIds['john@gmail.com'] },
+      { id: 'playlist_john_4', title: 'Gym Power Mix', owner: userIds['john@gmail.com'] },
+      { id: 'playlist_john_5', title: 'Weekend Vibes', owner: userIds['john@gmail.com'] },
+      { id: 'playlist_john_6', title: 'Focus Flow', owner: userIds['john@gmail.com'] },
+      { id: 'playlist_john_7', title: 'Car Singalongs', owner: userIds['john@gmail.com'] },
+      { id: 'playlist_john_8', title: 'Rainy Day Blues', owner: userIds['john@gmail.com'] },
+      { id: 'playlist_john_9', title: 'Summer Hits 2023', owner: userIds['john@gmail.com'] },
+      { id: 'playlist_john_10', title: '90s Throwback', owner: userIds['john@gmail.com'] },
+      { id: 'playlist_john_11', title: 'Road Trip Anthems', owner: userIds['john@gmail.com'] },
+      { id: 'playlist_john_12', title: 'Post-Work Unwind', owner: userIds['john@gmail.com'] },
+      { id: 'playlist_john_13', title: 'EDM Festival', owner: userIds['john@gmail.com'] },
+      { id: 'playlist_john_14', title: 'Acoustic Mornings', owner: userIds['john@gmail.com'] },
+      { id: 'playlist_john_15', title: 'Gaming Session', owner: userIds['john@gmail.com'] },
+
+      // 13 NEW FOR ADELE (total 15)
       { id: 'playlist_adele_1', title: 'Adele\'s Collection', owner: userIds['jane@gmail.com'] },
-      { id: 'playlist_adele_2', title: 'Relaxing Songs', owner: userIds['jane@gmail.com'] }
+      { id: 'playlist_adele_2', title: 'Relaxing Songs', owner: userIds['jane@gmail.com'] },
+      { id: 'playlist_adele_3', title: 'Soulful Sundays', owner: userIds['jane@gmail.com'] },
+      { id: 'playlist_adele_4', title: 'Piano Classics', owner: userIds['jane@gmail.com'] },
+      { id: 'playlist_adele_5', title: 'Bath Relaxation', owner: userIds['jane@gmail.com'] },
+      { id: 'playlist_adele_6', title: 'Morning Jazz', owner: userIds['jane@gmail.com'] },
+      { id: 'playlist_adele_7', title: 'Romantic Dinner', owner: userIds['jane@gmail.com'] },
+      { id: 'playlist_adele_8', title: 'Study Focus', owner: userIds['jane@gmail.com'] },
+      { id: 'playlist_adele_9', title: 'Yoga Flow', owner: userIds['jane@gmail.com'] },
+      { id: 'playlist_adele_10', title: 'Coffee House', owner: userIds['jane@gmail.com'] },
+      { id: 'playlist_adele_11', title: 'R&B Nights', owner: userIds['jane@gmail.com'] },
+      { id: 'playlist_adele_12', title: 'Indie Discoveries', owner: userIds['jane@gmail.com'] },
+      { id: 'playlist_adele_13', title: 'Dinner Party', owner: userIds['jane@gmail.com'] },
+      { id: 'playlist_adele_14', title: 'Rainy Day Reads', owner: userIds['jane@gmail.com'] },
+      { id: 'playlist_adele_15', title: 'Power Ballads', owner: userIds['jane@gmail.com'] }
     ]
 
     // Insert playlists
@@ -161,8 +216,35 @@ async function seedDatabase () {
       { userEmail: 'john@gmail.com', playlistId: 'playlist_john_2' },
       { userEmail: 'john@gmail.com', playlistId: 'playlist_adele_1' },
       { userEmail: 'john@gmail.com', playlistId: 'playlist_adele_2' },
+      { userEmail: 'john@gmail.com', playlistId: 'playlist_adele_3' },
+      { userEmail: 'john@gmail.com', playlistId: 'playlist_adele_4' },
+      { userEmail: 'john@gmail.com', playlistId: 'playlist_adele_5' },
+      { userEmail: 'john@gmail.com', playlistId: 'playlist_adele_6' },
+      { userEmail: 'john@gmail.com', playlistId: 'playlist_adele_7' },
+      { userEmail: 'john@gmail.com', playlistId: 'playlist_adele_8' },
+      { userEmail: 'john@gmail.com', playlistId: 'playlist_adele_9' },
+      { userEmail: 'john@gmail.com', playlistId: 'playlist_adele_10' },
+      { userEmail: 'john@gmail.com', playlistId: 'playlist_adele_11' },
+      { userEmail: 'john@gmail.com', playlistId: 'playlist_adele_12' },
+      { userEmail: 'john@gmail.com', playlistId: 'playlist_adele_13' },
+      { userEmail: 'john@gmail.com', playlistId: 'playlist_adele_14' },
+      { userEmail: 'john@gmail.com', playlistId: 'playlist_adele_15' },
+
       { userEmail: 'jane@gmail.com', playlistId: 'playlist_john_1' },
       { userEmail: 'jane@gmail.com', playlistId: 'playlist_john_2' },
+      { userEmail: 'jane@gmail.com', playlistId: 'playlist_john_3' },
+      { userEmail: 'jane@gmail.com', playlistId: 'playlist_john_4' },
+      { userEmail: 'jane@gmail.com', playlistId: 'playlist_john_5' },
+      { userEmail: 'jane@gmail.com', playlistId: 'playlist_john_6' },
+      { userEmail: 'jane@gmail.com', playlistId: 'playlist_john_7' },
+      { userEmail: 'jane@gmail.com', playlistId: 'playlist_john_8' },
+      { userEmail: 'jane@gmail.com', playlistId: 'playlist_john_9' },
+      { userEmail: 'jane@gmail.com', playlistId: 'playlist_john_10' },
+      { userEmail: 'jane@gmail.com', playlistId: 'playlist_john_11' },
+      { userEmail: 'jane@gmail.com', playlistId: 'playlist_john_12' },
+      { userEmail: 'jane@gmail.com', playlistId: 'playlist_john_13' },
+      { userEmail: 'jane@gmail.com', playlistId: 'playlist_john_14' },
+      { userEmail: 'jane@gmail.com', playlistId: 'playlist_john_15' },
       { userEmail: 'jane@gmail.com', playlistId: 'playlist_adele_1' },
       { userEmail: 'jane@gmail.com', playlistId: 'playlist_adele_2' }
     ]
@@ -181,18 +263,223 @@ async function seedDatabase () {
 
     // Data playlist_songs
     const playlistSongs = [
+      // JOHN'S PLAYLISTS (15 playlists)
+      // Playlist 1
       { playlistId: 'playlist_john_1', songId: 'song_john_1' },
       { playlistId: 'playlist_john_1', songId: 'song_john_8' },
       { playlistId: 'playlist_john_1', songId: 'song_adele_6' },
+      { playlistId: 'playlist_john_1', songId: 'song_john_3' },
+
+      // Playlist 2
       { playlistId: 'playlist_john_2', songId: 'song_john_6' },
       { playlistId: 'playlist_john_2', songId: 'song_john_7' },
       { playlistId: 'playlist_john_2', songId: 'song_john_10' },
+      { playlistId: 'playlist_john_2', songId: 'song_john_15' },
+      { playlistId: 'playlist_john_2', songId: 'song_john_2' },
+      { playlistId: 'playlist_john_2', songId: 'song_adele_7' },
+      { playlistId: 'playlist_john_2', songId: 'song_john_5' },
+      { playlistId: 'playlist_john_2', songId: 'song_adele_11' },
+
+      // Playlist 3
+      { playlistId: 'playlist_john_3', songId: 'song_john_4' },
+      { playlistId: 'playlist_john_3', songId: 'song_john_9' },
+      { playlistId: 'playlist_john_3', songId: 'song_john_12' },
+      { playlistId: 'playlist_john_3', songId: 'song_adele_2' },
+      { playlistId: 'playlist_john_3', songId: 'song_adele_8' },
+      { playlistId: 'playlist_john_3', songId: 'song_adele_15' },
+      { playlistId: 'playlist_john_3', songId: 'song_adele_9' },
+      { playlistId: 'playlist_john_3', songId: 'song_adele_12' },
+
+      // Playlist 4
+      { playlistId: 'playlist_john_4', songId: 'song_john_1' },
+      { playlistId: 'playlist_john_4', songId: 'song_john_6' },
+      { playlistId: 'playlist_john_4', songId: 'song_john_11' },
+      { playlistId: 'playlist_john_4', songId: 'song_adele_3' },
+
+      // Playlist 5
+      { playlistId: 'playlist_john_5', songId: 'song_john_2' },
+      { playlistId: 'playlist_john_5', songId: 'song_john_7' },
+      { playlistId: 'playlist_john_5', songId: 'song_john_14' },
+      { playlistId: 'playlist_john_5', songId: 'song_adele_4' },
+      { playlistId: 'playlist_john_5', songId: 'song_adele_10' },
+      { playlistId: 'playlist_john_5', songId: 'song_adele_13' },
+      { playlistId: 'playlist_john_5', songId: 'song_john_15' },
+      { playlistId: 'playlist_john_5', songId: 'song_adele_1' },
+      { playlistId: 'playlist_john_5', songId: 'song_adele_11' },
+      { playlistId: 'playlist_john_5', songId: 'song_adele_14' },
+
+      // Playlist 6
+      { playlistId: 'playlist_john_6', songId: 'song_john_3' },
+      { playlistId: 'playlist_john_6', songId: 'song_john_8' },
+
+      // Playlist 7
+      { playlistId: 'playlist_john_7', songId: 'song_john_4' },
+      { playlistId: 'playlist_john_7', songId: 'song_john_9' },
+      { playlistId: 'playlist_john_7', songId: 'song_john_12' },
+      { playlistId: 'playlist_john_7', songId: 'song_adele_2' },
+      { playlistId: 'playlist_john_7', songId: 'song_adele_7' },
+      { playlistId: 'playlist_john_7', songId: 'song_adele_15' },
+
+      // Playlist 8
+      { playlistId: 'playlist_john_8', songId: 'song_john_5' },
+      { playlistId: 'playlist_john_8', songId: 'song_john_10' },
+      { playlistId: 'playlist_john_8', songId: 'song_john_13' },
+      { playlistId: 'playlist_john_8', songId: 'song_adele_3' },
+      { playlistId: 'playlist_john_8', songId: 'song_adele_8' },
+      { playlistId: 'playlist_john_8', songId: 'song_adele_12' },
+
+      // Playlist 9
+      { playlistId: 'playlist_john_9', songId: 'song_john_1' },
+      { playlistId: 'playlist_john_9', songId: 'song_john_6' },
+      { playlistId: 'playlist_john_9', songId: 'song_john_11' },
+      { playlistId: 'playlist_john_9', songId: 'song_adele_4' },
+      { playlistId: 'playlist_john_9', songId: 'song_adele_9' },
+      { playlistId: 'playlist_john_9', songId: 'song_adele_13' },
+
+      // Playlist 10
+      { playlistId: 'playlist_john_10', songId: 'song_john_2' },
+      { playlistId: 'playlist_john_10', songId: 'song_john_7' },
+      { playlistId: 'playlist_john_10', songId: 'song_john_14' },
+      { playlistId: 'playlist_john_10', songId: 'song_adele_5' },
+      { playlistId: 'playlist_john_10', songId: 'song_adele_10' },
+      { playlistId: 'playlist_john_10', songId: 'song_adele_15' },
+
+      // Playlist 11
+      { playlistId: 'playlist_john_11', songId: 'song_john_3' },
+      { playlistId: 'playlist_john_11', songId: 'song_john_8' },
+      { playlistId: 'playlist_john_11', songId: 'song_john_15' },
+      { playlistId: 'playlist_john_11', songId: 'song_adele_1' },
+      { playlistId: 'playlist_john_11', songId: 'song_adele_6' },
+      { playlistId: 'playlist_john_11', songId: 'song_adele_11' },
+
+      // Playlist 12
+      { playlistId: 'playlist_john_12', songId: 'song_john_4' },
+      { playlistId: 'playlist_john_12', songId: 'song_john_9' },
+      { playlistId: 'playlist_john_12', songId: 'song_john_12' },
+      { playlistId: 'playlist_john_12', songId: 'song_adele_2' },
+      { playlistId: 'playlist_john_12', songId: 'song_adele_7' },
+      { playlistId: 'playlist_john_12', songId: 'song_adele_14' },
+
+      // Playlist 13
+      { playlistId: 'playlist_john_13', songId: 'song_john_5' },
+      { playlistId: 'playlist_john_13', songId: 'song_john_10' },
+      { playlistId: 'playlist_john_13', songId: 'song_john_13' },
+      { playlistId: 'playlist_john_13', songId: 'song_adele_3' },
+      { playlistId: 'playlist_john_13', songId: 'song_adele_8' },
+      { playlistId: 'playlist_john_13', songId: 'song_adele_12' },
+
+      // Playlist 14
+      { playlistId: 'playlist_john_14', songId: 'song_john_1' },
+      { playlistId: 'playlist_john_14', songId: 'song_john_6' },
+      { playlistId: 'playlist_john_14', songId: 'song_john_11' },
+      { playlistId: 'playlist_john_14', songId: 'song_adele_4' },
+      { playlistId: 'playlist_john_14', songId: 'song_adele_9' },
+      { playlistId: 'playlist_john_14', songId: 'song_adele_13' },
+
+      // Playlist 15
+      { playlistId: 'playlist_john_15', songId: 'song_john_2' },
+      { playlistId: 'playlist_john_15', songId: 'song_john_7' },
+      { playlistId: 'playlist_john_15', songId: 'song_john_14' },
+      { playlistId: 'playlist_john_15', songId: 'song_adele_5' },
+      { playlistId: 'playlist_john_15', songId: 'song_adele_10' },
+      { playlistId: 'playlist_john_15', songId: 'song_adele_15' },
+
+      // ADELE'S PLAYLISTS (15 playlists)
+      // Playlist 1
       { playlistId: 'playlist_adele_1', songId: 'song_adele_1' },
       { playlistId: 'playlist_adele_1', songId: 'song_adele_6' },
       { playlistId: 'playlist_adele_1', songId: 'song_adele_10' },
+      { playlistId: 'playlist_adele_1', songId: 'song_adele_3' },
+      { playlistId: 'playlist_adele_1', songId: 'song_john_4' },
+      { playlistId: 'playlist_adele_1', songId: 'song_john_9' },
+
+      // Playlist 2
       { playlistId: 'playlist_adele_2', songId: 'song_adele_5' },
       { playlistId: 'playlist_adele_2', songId: 'song_john_8' },
-      { playlistId: 'playlist_adele_2', songId: 'song_adele_14' }
+      { playlistId: 'playlist_adele_2', songId: 'song_adele_14' },
+      { playlistId: 'playlist_adele_2', songId: 'song_adele_7' },
+      { playlistId: 'playlist_adele_2', songId: 'song_john_1' },
+      { playlistId: 'playlist_adele_2', songId: 'song_john_12' },
+
+      // Playlist 3
+      { playlistId: 'playlist_adele_3', songId: 'song_adele_2' },
+      { playlistId: 'playlist_adele_3', songId: 'song_adele_8' },
+      { playlistId: 'playlist_adele_3', songId: 'song_adele_12' },
+      { playlistId: 'playlist_adele_3', songId: 'song_john_3' },
+      { playlistId: 'playlist_adele_3', songId: 'song_john_10' },
+      { playlistId: 'playlist_adele_3', songId: 'song_john_15' },
+
+      // Playlist 4
+      { playlistId: 'playlist_adele_4', songId: 'song_adele_1' },
+      { playlistId: 'playlist_adele_4', songId: 'song_adele_9' },
+      { playlistId: 'playlist_adele_4', songId: 'song_adele_13' },
+      { playlistId: 'playlist_adele_4', songId: 'song_john_4' },
+      { playlistId: 'playlist_adele_4', songId: 'song_john_11' },
+      { playlistId: 'playlist_adele_4', songId: 'song_john_14' },
+
+      // Playlist 5
+      { playlistId: 'playlist_adele_5', songId: 'song_adele_2' },
+      { playlistId: 'playlist_adele_5', songId: 'song_adele_10' },
+      { playlistId: 'playlist_adele_5', songId: 'song_adele_14' },
+      { playlistId: 'playlist_adele_5', songId: 'song_john_5' },
+      { playlistId: 'playlist_adele_5', songId: 'song_john_12' },
+      { playlistId: 'playlist_adele_5', songId: 'song_john_15' },
+
+      // Playlist 6
+      { playlistId: 'playlist_adele_6', songId: 'song_adele_3' },
+      { playlistId: 'playlist_adele_6', songId: 'song_adele_11' },
+      { playlistId: 'playlist_adele_6', songId: 'song_adele_15' },
+      { playlistId: 'playlist_adele_6', songId: 'song_john_1' },
+      { playlistId: 'playlist_adele_6', songId: 'song_john_6' },
+      { playlistId: 'playlist_adele_6', songId: 'song_john_13' },
+
+      // Playlist 7
+      { playlistId: 'playlist_adele_7', songId: 'song_adele_4' },
+      { playlistId: 'playlist_adele_7', songId: 'song_adele_12' },
+      { playlistId: 'playlist_adele_7', songId: 'song_john_2' },
+      { playlistId: 'playlist_adele_7', songId: 'song_john_7' },
+      { playlistId: 'playlist_adele_7', songId: 'song_john_14' },
+      { playlistId: 'playlist_adele_7', songId: 'song_adele_7' },
+
+      // Playlist 8
+      { playlistId: 'playlist_adele_8', songId: 'song_adele_5' },
+      { playlistId: 'playlist_adele_8', songId: 'song_adele_13' },
+      { playlistId: 'playlist_adele_8', songId: 'song_john_3' },
+      { playlistId: 'playlist_adele_8', songId: 'song_john_8' },
+      { playlistId: 'playlist_adele_8', songId: 'song_john_15' },
+      { playlistId: 'playlist_adele_8', songId: 'song_adele_8' },
+
+      // Playlist 9
+      { playlistId: 'playlist_adele_9', songId: 'song_adele_6' },
+      { playlistId: 'playlist_adele_9', songId: 'song_adele_14' },
+      { playlistId: 'playlist_adele_9', songId: 'song_john_4' },
+      { playlistId: 'playlist_adele_9', songId: 'song_john_9' },
+      { playlistId: 'playlist_adele_9', songId: 'song_john_12' },
+      { playlistId: 'playlist_adele_9', songId: 'song_adele_9' },
+
+      // Playlist 10
+      { playlistId: 'playlist_adele_10', songId: 'song_adele_7' },
+      { playlistId: 'playlist_adele_10', songId: 'song_adele_15' },
+      { playlistId: 'playlist_adele_10', songId: 'song_john_5' },
+      { playlistId: 'playlist_adele_10', songId: 'song_john_10' },
+      { playlistId: 'playlist_adele_10', songId: 'song_john_13' },
+      { playlistId: 'playlist_adele_10', songId: 'song_adele_10' },
+
+      // Playlist 11
+      { playlistId: 'playlist_adele_11', songId: 'song_adele_8' },
+      { playlistId: 'playlist_adele_11', songId: 'song_john_1' },
+      { playlistId: 'playlist_adele_11', songId: 'song_john_6' },
+      { playlistId: 'playlist_adele_11', songId: 'song_john_11' },
+      { playlistId: 'playlist_adele_11', songId: 'song_adele_11' },
+      { playlistId: 'playlist_adele_11', songId: 'song_adele_2' },
+
+      // Playlist 12
+      { playlistId: 'playlist_adele_12', songId: 'song_adele_9' },
+      { playlistId: 'playlist_adele_12', songId: 'song_john_2' },
+      { playlistId: 'playlist_adele_12', songId: 'song_john_7' },
+      { playlistId: 'playlist_adele_12', songId: 'song_john_14' },
+      { playlistId: 'playlist_adele_12', songId: 'song_adele_12' },
+      { playlistId: 'playlist_adele_12', songId: 'song_adele_3' }
     ]
 
     // Insert playlist_songs

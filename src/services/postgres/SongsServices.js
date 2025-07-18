@@ -2,7 +2,7 @@ const { nanoid } = require('nanoid')
 const { Pool } = require('pg')
 const InvariantError = require('../../exceptions/InvariantError')
 const NotFoundError = require('../../exceptions/NotFoundError')
-const { mapDBToModelSong } = require('../../utils/songs')
+const { mapDBToModelSong, mapDBToModelSongSearch } = require('../../utils/songs')
 const AuthorizationError = require('../../exceptions/AuthorizationError')
 
 class SongsService {
@@ -99,22 +99,29 @@ class SongsService {
   }
 
   async getSongs (title, offset, limit) {
-    let queryText = 'SELECT * FROM songs'
+    let queryText = `
+    SELECT s.*, COUNT(usl.song_id) AS likes_count
+    FROM songs s
+    LEFT JOIN user_song_likes usl ON s.id = usl.song_id
+  `
     const values = []
 
     if (title) {
-      queryText += ' WHERE title ILIKE $1'
+      queryText += ' WHERE s.title ILIKE $1'
       values.push(`%${title}%`)
     }
 
-    queryText += ` ORDER BY id OFFSET $${values.length + 1} LIMIT $${values.length + 2}`
+    queryText += `
+    GROUP BY s.id
+    ORDER BY s.id OFFSET $${values.length + 1} LIMIT $${values.length + 2}
+  `
     values.push(offset, limit)
 
     const result = await this._pool.query({
       text: queryText,
       values
     })
-    return result.rows.map(mapDBToModelSong)
+    return result.rows.map(mapDBToModelSongSearch)
   }
 
   async getSongById (id) {
