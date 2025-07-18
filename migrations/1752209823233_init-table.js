@@ -12,7 +12,9 @@ exports.up = pgm => {
     id: { type: 'VARCHAR(50)', primaryKey: true },
     email: { type: 'VARCHAR(50)', unique: true, notNull: true },
     password: { type: 'TEXT', notNull: true },
-    fullname: { type: 'TEXT', notNull: true }
+    fullname: { type: 'TEXT', notNull: true },
+    created_at: { type: 'TIMESTAMP', default: pgm.func('current_timestamp'), notNull: true },
+    updated_at: { type: 'TIMESTAMP', default: pgm.func('current_timestamp'), notNull: true }
   })
 
   // === ALBUMS ===
@@ -22,7 +24,9 @@ exports.up = pgm => {
     artist: { type: 'VARCHAR(100)', notNull: true },
     year: { type: 'SMALLINT', notNull: true },
     cover_url: { type: 'TEXT' },
-    uploader: { type: 'VARCHAR(50)' }
+    uploader: { type: 'VARCHAR(50)' },
+    created_at: { type: 'TIMESTAMP', default: pgm.func('current_timestamp'), notNull: true },
+    updated_at: { type: 'TIMESTAMP', default: pgm.func('current_timestamp'), notNull: true }
   })
 
   // === SONGS ===
@@ -35,7 +39,9 @@ exports.up = pgm => {
     duration: { type: 'SMALLINT' },
     album_id: { type: 'VARCHAR(50)' },
     cover_url: { type: 'TEXT' },
-    uploader: { type: 'VARCHAR(50)' }
+    uploader: { type: 'VARCHAR(50)' },
+    created_at: { type: 'TIMESTAMP', default: pgm.func('current_timestamp'), notNull: true },
+    updated_at: { type: 'TIMESTAMP', default: pgm.func('current_timestamp'), notNull: true }
   })
 
   pgm.addConstraint('songs', 'fk_songs.uploader_users.id', 'FOREIGN KEY(uploader) REFERENCES users(id) ON DELETE CASCADE')
@@ -48,7 +54,9 @@ exports.up = pgm => {
   pgm.createTable('playlists', {
     id: { type: 'VARCHAR(50)', primaryKey: true },
     title: { type: 'VARCHAR(50)', notNull: true },
-    owner: { type: 'VARCHAR(50)' }
+    owner: { type: 'VARCHAR(50)' },
+    created_at: { type: 'TIMESTAMP', default: pgm.func('current_timestamp'), notNull: true },
+    updated_at: { type: 'TIMESTAMP', default: pgm.func('current_timestamp'), notNull: true }
   })
 
   pgm.addConstraint('playlists', 'fk_playlists.owner_users.id', 'FOREIGN KEY(owner) REFERENCES users(id) ON DELETE CASCADE')
@@ -57,7 +65,9 @@ exports.up = pgm => {
   pgm.createTable('playlist_songs', {
     id: { type: 'VARCHAR(50)', primaryKey: true },
     playlist_id: { type: 'VARCHAR(50)' },
-    song_id: { type: 'VARCHAR(50)' }
+    song_id: { type: 'VARCHAR(50)' },
+    created_at: { type: 'TIMESTAMP', default: pgm.func('current_timestamp'), notNull: true },
+    updated_at: { type: 'TIMESTAMP', default: pgm.func('current_timestamp'), notNull: true }
   })
 
   pgm.addConstraint('playlist_songs', 'fk_playlist_song.playlist_id_playlists.id', 'FOREIGN KEY(playlist_id) REFERENCES playlists(id) ON DELETE CASCADE')
@@ -68,7 +78,9 @@ exports.up = pgm => {
   pgm.createTable('collaborations', {
     id: { type: 'VARCHAR(50)', primaryKey: true },
     playlist_id: { type: 'VARCHAR(50)' },
-    user_id: { type: 'VARCHAR(50)' }
+    user_id: { type: 'VARCHAR(50)' },
+    created_at: { type: 'TIMESTAMP', default: pgm.func('current_timestamp'), notNull: true },
+    updated_at: { type: 'TIMESTAMP', default: pgm.func('current_timestamp'), notNull: true }
   })
 
   pgm.addConstraint('collaborations', 'fk_collaborations.playlist_id_playlists.id', 'FOREIGN KEY(playlist_id) REFERENCES playlists(id) ON DELETE CASCADE')
@@ -82,7 +94,9 @@ exports.up = pgm => {
     song_id: { type: 'VARCHAR(50)' },
     user_id: { type: 'VARCHAR(50)' },
     action: { type: 'VARCHAR(50)' },
-    time: { type: 'VARCHAR(50)' }
+    time: { type: 'VARCHAR(50)' },
+    created_at: { type: 'TIMESTAMP', default: pgm.func('current_timestamp'), notNull: true },
+    updated_at: { type: 'TIMESTAMP', default: pgm.func('current_timestamp'), notNull: true }
   })
 
   pgm.addConstraint('playlist_song_activities', 'fk_playlist_song_activities.playlist_id_playlists.id', 'FOREIGN KEY(playlist_id) REFERENCES playlists(id) ON DELETE CASCADE')

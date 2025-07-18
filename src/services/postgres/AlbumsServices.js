@@ -58,7 +58,7 @@ class AlbumsService {
         LEFT JOIN songs s ON s.album_id = a.id
         WHERE a.uploader = $1
         GROUP BY a.id
-        ORDER BY a.year DESC
+        ORDER BY a.created_at DESC
         OFFSET $2 LIMIT $3
       `,
       values: [userId, offset, limit]
@@ -105,7 +105,7 @@ class AlbumsService {
 
     queryText += `
       GROUP BY a.id
-      ORDER BY a.year DESC
+      ORDER BY a.created_at DESC
       OFFSET $${values.length + 1} LIMIT $${values.length + 2}
     `
     values.push(offset, limit)

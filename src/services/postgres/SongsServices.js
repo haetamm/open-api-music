@@ -45,7 +45,7 @@ class SongsService {
 
   async getSongsByUser (userId, offset, limit) {
     const query = {
-      text: 'SELECT * FROM songs WHERE uploader = $1 ORDER BY id OFFSET $2 LIMIT $3',
+      text: 'SELECT * FROM songs WHERE uploader = $1 ORDER BY created_at DESC OFFSET $2 LIMIT $3',
       values: [userId, offset, limit]
     }
     const result = await this._pool.query(query)
@@ -73,7 +73,7 @@ class SongsService {
       FROM songs 
       JOIN user_song_likes ON songs.id = user_song_likes.song_id 
       WHERE user_song_likes.user_id = $1 
-      ORDER BY songs.id 
+      ORDER BY songs.created_at DESC 
       OFFSET $2 LIMIT $3
     `,
       values: [userId, offset, limit]
@@ -113,7 +113,7 @@ class SongsService {
 
     queryText += `
     GROUP BY s.id
-    ORDER BY s.id OFFSET $${values.length + 1} LIMIT $${values.length + 2}
+    ORDER BY s.created_at DESC OFFSET $${values.length + 1} LIMIT $${values.length + 2}
   `
     values.push(offset, limit)
 

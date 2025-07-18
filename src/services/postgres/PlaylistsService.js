@@ -70,7 +70,7 @@ class PlaylistsService {
 
     queryText += `
       GROUP BY p.id, u.fullname
-      ORDER BY p.id
+      ORDER BY p.created_at DESC
       OFFSET $${values.length + 1} LIMIT $${values.length + 2}
     `
     values.push(offset, limit)
@@ -115,7 +115,7 @@ class PlaylistsService {
         LEFT JOIN songs s ON s.id = ps.song_id
         WHERE p.owner = $1
         GROUP BY p.id, u.fullname
-        ORDER BY p.id
+        ORDER BY p.created_at DESC
         OFFSET $2 LIMIT $3
       `,
       values: [owner, offset, limit]
@@ -154,7 +154,7 @@ class PlaylistsService {
         JOIN user_playlist_likes upl ON p.id = upl.playlist_id
         WHERE upl.user_id = $1
         GROUP BY p.id, u.fullname
-        ORDER BY p.id
+        ORDER BY p.created_at DESC
         OFFSET $2 LIMIT $3
       `,
       values: [userId, offset, limit]
