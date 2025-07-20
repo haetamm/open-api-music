@@ -18,12 +18,12 @@ class AlbumsHandler {
     const { title, artist, year } = request.payload
 
     const { id: credentialId } = request.auth.credentials
-    const albumId = await this._service.addAlbum({ title, artist, year, coverUrl: null, uploader: credentialId })
+    const newAlbum = await this._service.addAlbum({ title, artist, year, coverUrl: null, uploader: credentialId })
 
     const response = h.response({
       status: 'success',
       data: {
-        albumId
+        newAlbum
       }
     })
     response.code(201)

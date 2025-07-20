@@ -63,11 +63,13 @@ class SongsHandler {
   }
 
   async getSongsHandler (request, h) {
-    const { page = 1, limit = 10, title } = request.query
+    const { page = 1, limit = 10, title, random = false } = request.query
     const { page: validatedPage, limit: validatedLimit, offset } = validateAndCalculatePagination(page, limit)
 
+    const isRandom = random === 'true' || random === true
+
     const total = await this._service.getSongsCount(title)
-    const songs = await this._service.getSongs(title, offset, validatedLimit)
+    const songs = await this._service.getSongs(title, offset, validatedLimit, isRandom)
 
     return createPaginationResponse(h, {
       total,

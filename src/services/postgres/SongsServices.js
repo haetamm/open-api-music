@@ -98,12 +98,15 @@ class SongsService {
     return parseInt(result.rows[0].count)
   }
 
-  async getSongs (title, offset, limit) {
+  async getSongs (title, offset, limit, random = false) {
     let queryText = `
-    SELECT s.*, COUNT(usl.song_id) AS likes_count
+    SELECT
+      s.*,
+      COUNT(usl.song_id) AS likes_count
     FROM songs s
     LEFT JOIN user_song_likes usl ON s.id = usl.song_id
   `
+
     const values = []
 
     if (title) {
@@ -111,16 +114,24 @@ class SongsService {
       values.push(`%${title}%`)
     }
 
+    // Tentukan posisi OFFSET dan LIMIT di query
+    const offsetParam = `$${values.length + 1}`
+    const limitParam = `$${values.length + 2}`
+
     queryText += `
     GROUP BY s.id
-    ORDER BY s.created_at DESC OFFSET $${values.length + 1} LIMIT $${values.length + 2}
+    ORDER BY ${random ? 'RANDOM()' : 's.created_at DESC'}
+    OFFSET ${offsetParam}
+    LIMIT ${limitParam}
   `
+
     values.push(offset, limit)
 
     const result = await this._pool.query({
       text: queryText,
       values
     })
+
     return result.rows.map(mapDBToModelSongSearch)
   }
 
