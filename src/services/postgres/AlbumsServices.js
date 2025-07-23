@@ -2,7 +2,7 @@ const { nanoid } = require('nanoid')
 const { Pool } = require('pg')
 const InvariantError = require('../../exceptions/InvariantError')
 const NotFoundError = require('../../exceptions/NotFoundError')
-const { mapDBToModel, mapAlbumToModel } = require('../../utils/albums')
+const { mapDBToModel, mapAlbumToModel, mapAlbum } = require('../../utils/albums')
 const AuthorizationError = require('../../exceptions/AuthorizationError')
 
 class AlbumsService {
@@ -21,7 +21,7 @@ class AlbumsService {
     const id = `album-${i}`
 
     const query = {
-      text: 'INSERT INTO albums VALUES($1, $2, $3, $4, $5, $6) RETURNING id',
+      text: 'INSERT INTO albums VALUES($1, $2, $3, $4, $5, $6) RETURNING *',
       values: [id, title, artist, year, coverUrl, uploader]
     }
 
@@ -31,7 +31,13 @@ class AlbumsService {
       throw new InvariantError('Album gagal ditambahkan')
     }
 
-    return result.rows[0].id
+    const albumRow = {
+      ...result.rows[0],
+      song_count: 0,
+      total_duration: 0
+    }
+
+    return mapDBToModel(albumRow)
   }
 
   async getAlbumsCountByUser (userId) {
@@ -51,6 +57,7 @@ class AlbumsService {
           a.title,
           a.artist,
           a.year,
+          a.uploader,
           a.cover_url,
           COUNT(s.id) AS song_count,
           COALESCE(SUM(s.duration), 0) AS total_duration
@@ -90,6 +97,7 @@ class AlbumsService {
         a.title,
         a.artist,
         a.year,
+        a.uploader,
         a.cover_url,
         COUNT(s.id) AS song_count,
         COALESCE(SUM(s.duration), 0) AS total_duration
@@ -126,6 +134,7 @@ class AlbumsService {
             a.artist,
             a.year,
             a.cover_url,
+            a.uploader,
             COUNT(s.id) AS song_count,
             COALESCE(SUM(s.duration), 0) AS total_duration
           FROM albums a
@@ -157,15 +166,22 @@ class AlbumsService {
   }
 
   async editAlbumById (id, { title, artist, year }) {
-    const query = {
-      text: 'UPDATE albums SET title = $1, artist = $2, year = $3 WHERE id = $3 RETURNING id',
-      values: [title, artist, year, id]
-    }
+    try {
+      const query = {
+        text: 'UPDATE albums SET title = $1, artist = $2, year = $3 WHERE id = $4 RETURNING *',
+        values: [title, artist, year, id]
+      }
 
-    const result = await this._pool.query(query)
+      const result = await this._pool.query(query)
 
-    if (!result.rowCount) {
-      throw new NotFoundError('Gagal memperbarui album. Id tidak ditemukan')
+      if (!result.rowCount) {
+        throw new NotFoundError('Gagal memperbarui album. Id tidak ditemukan')
+      }
+
+      return mapAlbum(result.rows[0])
+    } catch (err) {
+      console.log(err)
+      throw err // Re-throw the error for proper handling upstream
     }
   }
 

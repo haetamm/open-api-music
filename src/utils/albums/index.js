@@ -4,6 +4,7 @@ const mapDBToModel = ({
   artist,
   year,
   cover_url,
+  uploader,
   song_count,
   total_duration
 }) => ({
@@ -11,9 +12,26 @@ const mapDBToModel = ({
   title,
   artist,
   year,
+  userId: uploader,
   coverUrl: cover_url,
   songCount: song_count,
   totalDuration: total_duration
+})
+
+const mapAlbum = ({
+  id,
+  title,
+  artist,
+  year,
+  cover_url,
+  uploader
+}) => ({
+  id,
+  title,
+  artist,
+  year,
+  userId: uploader,
+  coverUrl: cover_url
 })
 
 const mapAlbumToModel = ({
@@ -21,13 +39,15 @@ const mapAlbumToModel = ({
   title,
   performer,
   duration,
-  cover_url
+  cover_url,
+  uploader
 }) => ({
   id,
   title,
   performer,
   duration,
-  coverUrl: cover_url
+  coverUrl: cover_url,
+  userId: uploader
 })
 
-module.exports = { mapDBToModel, mapAlbumToModel }
+module.exports = { mapDBToModel, mapAlbum, mapAlbumToModel }

@@ -21,7 +21,7 @@ class SongsService {
     const id = `song-${i}`
 
     const query = {
-      text: 'INSERT INTO songs VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id',
+      text: 'INSERT INTO songs VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *',
       values: [id, title, year, performer, genre, duration, albumId, coverUrl, uploader]
     }
 
@@ -31,7 +31,26 @@ class SongsService {
       throw new InvariantError('Lagu gagal ditambahkan')
     }
 
-    return result.rows[0].id
+    return mapDBToModelSong(result.rows[0])
+  }
+
+  async editSongById (id, { title, year, performer, genre, duration, album_id }) {
+    try {
+      const query = {
+        text: 'UPDATE songs SET title = $1, year = $2, performer = $3, genre = $4, duration = $5, album_id = $6 WHERE id = $7 RETURNING *',
+        values: [title, year, performer, genre, duration, album_id, id]
+      }
+
+      const result = await this._pool.query(query)
+
+      if (!result.rows.length) {
+        throw new NotFoundError('Gagal memperbarui lagu. Id tidak ditemukan')
+      }
+
+      return mapDBToModelSong(result.rows[0])
+    } catch (err) {
+      console.log(err)
+    }
   }
 
   async getSongsCountByUser (userId) {
@@ -45,11 +64,21 @@ class SongsService {
 
   async getSongsByUser (userId, offset, limit) {
     const query = {
-      text: 'SELECT * FROM songs WHERE uploader = $1 ORDER BY created_at DESC OFFSET $2 LIMIT $3',
+      text: `SELECT 
+                s.*,
+                COUNT(usl.song_id) AS likes_count
+              FROM songs s
+              LEFT JOIN user_song_likes usl ON s.id = usl.song_id
+              WHERE uploader = $1
+              GROUP BY s.id
+              ORDER BY created_at DESC
+              OFFSET $2 LIMIT $3
+            `,
       values: [userId, offset, limit]
     }
+
     const result = await this._pool.query(query)
-    return result.rows.map(mapDBToModelSong)
+    return result.rows.map(mapDBToModelSongSearch)
   }
 
   async getSongsCountLikedByUser (userId) {
@@ -67,19 +96,26 @@ class SongsService {
   }
 
   async getSongsLikedByCurrentUser (userId, offset, limit) {
-    const query = {
-      text: `
-      SELECT songs.id, songs.title, songs.performer, songs.duration, songs.cover_url
-      FROM songs 
-      JOIN user_song_likes ON songs.id = user_song_likes.song_id 
-      WHERE user_song_likes.user_id = $1 
-      ORDER BY songs.created_at DESC 
-      OFFSET $2 LIMIT $3
-    `,
-      values: [userId, offset, limit]
+    try {
+      const query = {
+        text: `
+          SELECT
+            s.*,
+            COUNT(usl.song_id) AS likes_count
+          FROM songs s
+          LEFT JOIN user_song_likes usl ON s.id = usl.song_id
+          WHERE usl.user_id = $1
+          GROUP BY s.id
+          ORDER BY s.created_at DESC 
+          OFFSET $2 LIMIT $3
+        `,
+        values: [userId, offset, limit]
+      }
+      const result = await this._pool.query(query)
+      return result.rows.map(mapDBToModelSongSearch)
+    } catch (err) {
+      console.log(err)
     }
-    const result = await this._pool.query(query)
-    return result.rows.map(mapDBToModelSong)
   }
 
   async getSongsCount (title) {
@@ -135,23 +171,16 @@ class SongsService {
     return result.rows.map(mapDBToModelSongSearch)
   }
 
-  async getSongById (id) {
+  async getSongDetailById (id) {
     const query = {
       text: `
-          SELECT 
-            s.*,
-            u.fullname AS uploader_name,
-            a.id AS album_id,
-            a.title AS album_title,
-            a.year AS album_year,
-            a.cover_url AS album_cover,
-            ua.fullname AS album_uploader_name
-          FROM songs s
-          LEFT JOIN users u ON s.uploader = u.id
-          LEFT JOIN albums a ON s.album_id = a.id
-          LEFT JOIN users ua ON a.uploader = ua.id
-          WHERE s.id = $1
-        `,
+      SELECT 
+        s.*,
+        u.fullname AS uploader_name
+      FROM songs s
+      LEFT JOIN users u ON s.uploader = u.id
+      WHERE s.id = $1
+    `,
       values: [id]
     }
 
@@ -164,14 +193,34 @@ class SongsService {
     return result.rows[0]
   }
 
+  async getAlbumDetailById (albumId) {
+    const query = {
+      text: `
+      SELECT 
+        a.id AS album_id,
+        a.title AS album_title,
+        a.year AS album_year,
+        a.cover_url AS album_cover,
+        u.fullname AS album_uploader_name
+      FROM albums a
+      LEFT JOIN users u ON a.uploader = u.id
+      WHERE a.id = $1
+    `,
+      values: [albumId]
+    }
+
+    const result = await this._pool.query(query)
+    return result.rowCount ? result.rows[0] : null
+  }
+
   async getSongLikes (id) {
     const query = {
       text: `
-        SELECT u.id AS user_id, u.fullname 
-        FROM user_song_likes usl
-        JOIN users u ON usl.user_id = u.id
-        WHERE usl.song_id = $1
-      `,
+      SELECT u.id AS user_id, u.fullname 
+      FROM user_song_likes usl
+      JOIN users u ON usl.user_id = u.id
+      WHERE usl.song_id = $1
+    `,
       values: [id]
     }
 
@@ -180,19 +229,6 @@ class SongsService {
       userId: user_id,
       fullname
     }))
-  }
-
-  async editSongById (id, { title, year, performer, genre, duration }) {
-    const query = {
-      text: 'UPDATE songs SET title = $1, year = $2, performer = $3, genre = $4, duration = $5 WHERE id = $6 RETURNING id',
-      values: [title, year, performer, genre, duration, id]
-    }
-
-    const result = await this._pool.query(query)
-
-    if (!result.rows.length) {
-      throw new NotFoundError('Gagal memperbarui lagu. Id tidak ditemukan')
-    }
   }
 
   async deleteSongById (id) {

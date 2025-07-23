@@ -1,4 +1,4 @@
-const mapSongDBToModel = (songData, likes = []) => ({
+const mapSongDBToModel = (songData, likes = [], album = null) => ({
   id: songData.id,
   title: songData.title,
   year: songData.year,
@@ -7,14 +7,15 @@ const mapSongDBToModel = (songData, likes = []) => ({
   duration: songData.duration,
   coverUrl: songData.cover_url,
   uploader: songData.uploader_name,
+  userId: songData.uploader,
   likes,
-  album: songData.album_id
+  album: album
     ? {
-        id: songData.album_id,
-        title: songData.album_title,
-        year: songData.album_year,
-        coverUrl: songData.album_cover,
-        uploader: songData.album_uploader_name
+        id: album.album_id,
+        title: album.album_title,
+        year: album.album_year,
+        coverUrl: album.album_cover,
+        uploader: album.album_uploader_name
       }
     : null
 })
@@ -24,13 +25,15 @@ const mapDBToModelSong = ({
   title,
   performer,
   duration,
-  cover_url
+  cover_url,
+  uploader
 }) => ({
   id,
   title,
   performer,
   duration,
-  coverUrl: cover_url
+  coverUrl: cover_url,
+  userId: uploader
 })
 
 const mapDBToModelSongSearch = ({
@@ -39,6 +42,7 @@ const mapDBToModelSongSearch = ({
   performer,
   duration,
   cover_url,
+  uploader,
   likes_count
 }) => ({
   id,
@@ -46,6 +50,7 @@ const mapDBToModelSongSearch = ({
   performer,
   duration,
   coverUrl: cover_url,
+  userId: uploader,
   likesCount: likes_count
 })
 

@@ -10,17 +10,18 @@ class PlaylistsHandler {
     this.getPlaylistsHandler = this.getPlaylistsHandler.bind(this)
     this.getPlaylistsByCurrentUserHandler = this.getPlaylistsByCurrentUserHandler.bind(this)
     this.getPlaylistsLikedHandler = this.getPlaylistsLikedHandler.bind(this)
+    this.getPlaylistsCollabHandler = this.getPlaylistsCollabHandler.bind(this)
     this.deletePlaylistByIdHandler = this.deletePlaylistByIdHandler.bind(this)
   }
 
   async postPlaylistHandler (request, h) {
     this._validator.validatePlaylistsPayload(request.payload)
 
-    const { name } = request.payload
+    const { title } = request.payload
 
     const { id: credentialId } = request.auth.credentials
     const playlistId = await this._service.addPlaylist({
-      name, owner: credentialId
+      title, owner: credentialId
     })
     const response = h.response({
       status: 'success',
@@ -68,6 +69,21 @@ class PlaylistsHandler {
 
     const total = await this._service.getPlaylistsLikedCount(credentialId)
     const playlists = await this._service.getPlaylistsLiked(credentialId, offset, validatedLimit)
+
+    return createPaginationResponse(h, {
+      total,
+      results: playlists,
+      resourceName: 'playlists'
+    }, validatedPage, validatedLimit)
+  }
+
+  async getPlaylistsCollabHandler (request, h) {
+    const { id: credentialId } = request.auth.credentials
+    const { page = 1, limit = 10 } = request.query
+    const { page: validatedPage, limit: validatedLimit, offset } = validateAndCalculatePagination(page, limit)
+
+    const total = await this._service.getPlaylistCollabCount(credentialId)
+    const playlists = await this._service.getPlaylistsCollab(credentialId, offset, validatedLimit)
 
     return createPaginationResponse(h, {
       total,

@@ -18,12 +18,12 @@ class AlbumsHandler {
     const { title, artist, year } = request.payload
 
     const { id: credentialId } = request.auth.credentials
-    const newAlbum = await this._service.addAlbum({ title, artist, year, coverUrl: null, uploader: credentialId })
+    const album = await this._service.addAlbum({ title, artist, year, coverUrl: null, uploader: credentialId })
 
     const response = h.response({
       status: 'success',
       data: {
-        newAlbum
+        album
       }
     })
     response.code(201)
@@ -73,7 +73,7 @@ class AlbumsHandler {
     }
   }
 
-  async putAlbumByIdHandler (request) {
+  async putAlbumByIdHandler (request, h) {
     this._validator.validateAlbumPayload(request.payload)
     const { title, artist, year } = request.payload
     const { id } = request.params
@@ -81,12 +81,16 @@ class AlbumsHandler {
 
     await this._service.verifyAlbumUploader(id, credentialId)
 
-    await this._service.editAlbumById(id, { title, artist, year })
+    const album = await this._service.editAlbumById(id, { title, artist, year })
 
-    return {
+    const response = h.response({
       status: 'success',
-      message: 'Album berhasil diperbarui'
-    }
+      data: {
+        album
+      }
+    })
+    response.code(200)
+    return response
   }
 
   async deleteAlbumByIdHandler (request) {

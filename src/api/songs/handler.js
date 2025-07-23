@@ -11,6 +11,7 @@ class SongsHandler {
     this.getSongsLikedByCurrentUserHandler = this.getSongsLikedByCurrentUserHandler.bind(this)
     this.getSongsHandler = this.getSongsHandler.bind(this)
     this.getSongByIdHendler = this.getSongByIdHendler.bind(this)
+    this.getSongDetailByIdHendler = this.getSongDetailByIdHendler.bind(this)
     this.putSongByIdHendler = this.putSongByIdHendler.bind(this)
     this.deleteSongByIdHendler = this.deleteSongByIdHendler.bind(this)
   }
@@ -20,12 +21,12 @@ class SongsHandler {
     const { title, year, performer, genre, duration, albumId } = request.payload
 
     const { id: credentialId } = request.auth.credentials
-    const songId = await this._service.addSong({ title, year, performer, genre, duration, albumId, coverUrl: null, uploader: credentialId })
+    const song = await this._service.addSong({ title, year, performer, genre, duration, albumId, coverUrl: null, uploader: credentialId })
 
     const response = h.response({
       status: 'success',
       data: {
-        songId
+        song
       }
     })
     response.code(201)
@@ -54,7 +55,6 @@ class SongsHandler {
 
     const total = await this._service.getSongsCountLikedByUser(credentialId)
     const songs = await this._service.getSongsLikedByCurrentUser(credentialId, offset, validatedLimit)
-
     return createPaginationResponse(h, {
       total,
       results: songs,
@@ -80,15 +80,27 @@ class SongsHandler {
 
   async getSongByIdHendler (request, h) {
     const { id } = request.params
+    const songData = await this._service.getSongDetailById(id)
+    const album = songData.album_id ? await this._service.getAlbumDetailById(songData.album_id) : null
 
-    // Ambil data terpisah dari service
-    const [songData, likes] = await Promise.all([
-      this._service.getSongById(id),
-      this._service.getSongLikes(id)
+    const song = mapSongDBToModel(songData, [], album)
+    return h.response({
+      status: 'success',
+      data: { song }
+    }).code(200)
+  }
+
+  async getSongDetailByIdHendler (request, h) {
+    const { id } = request.params
+
+    const songData = await this._service.getSongDetailById(id)
+
+    const [likes, album] = await Promise.all([
+      this._service.getSongLikes(id),
+      songData.album_id ? this._service.getAlbumDetailById(songData.album_id) : Promise.resolve(null)
     ])
 
-    // Gunakan mapper function
-    const song = mapSongDBToModel(songData, likes)
+    const song = mapSongDBToModel(songData, likes, album)
 
     return h.response({
       status: 'success',
@@ -96,20 +108,23 @@ class SongsHandler {
     }).code(200)
   }
 
-  async putSongByIdHendler (request) {
-    this._validator.validateSongPayload(request.payload)
-    const { title, year, performer, genre, duration } = request.payload
+  async putSongByIdHendler (request, h) {
+    const { title, year, performer, genre, duration, albumId } = request.payload
     const { id } = request.params
 
     const { id: credentialId } = request.auth.credentials
     await this._service.verifySongUploader(id, credentialId)
 
-    await this._service.editSongById(id, { title, year, performer, genre, duration })
+    const song = await this._service.editSongById(id, { title, year, performer, genre, duration, album_id: albumId })
 
-    return {
+    const response = h.response({
       status: 'success',
-      message: 'Lagu berhasil diperbarui'
-    }
+      data: {
+        song
+      }
+    })
+    response.code(200)
+    return response
   }
 
   async deleteSongByIdHendler (request) {

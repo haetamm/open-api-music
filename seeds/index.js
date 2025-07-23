@@ -148,7 +148,20 @@ async function seedDatabase () {
 
       { userEmail: 'jane@gmail.com', songId: 'song_adele_1' },
       { userEmail: 'jane@gmail.com', songId: 'song_adele_2' },
-      { userEmail: 'jane@gmail.com', songId: 'song_adele_3' }
+      { userEmail: 'jane@gmail.com', songId: 'song_adele_3' },
+
+      { userEmail: 'tami@gmail.com', songId: 'song_adele_5' },
+      { userEmail: 'tami@gmail.com', songId: 'song_adele_6' },
+      { userEmail: 'tami@gmail.com', songId: 'song_adele_7' },
+      { userEmail: 'tami@gmail.com', songId: 'song_adele_8' },
+      { userEmail: 'tami@gmail.com', songId: 'song_adele_9' },
+      { userEmail: 'tami@gmail.com', songId: 'song_adele_10' },
+      { userEmail: 'tami@gmail.com', songId: 'song_john_5' },
+      { userEmail: 'tami@gmail.com', songId: 'song_john_6' },
+      { userEmail: 'tami@gmail.com', songId: 'song_john_7' },
+      { userEmail: 'tami@gmail.com', songId: 'song_john_8' },
+      { userEmail: 'tami@gmail.com', songId: 'song_john_9' },
+      { userEmail: 'tami@gmail.com', songId: 'song_john_10' }
     ]
 
     // Insert user_song_likes
@@ -246,7 +259,21 @@ async function seedDatabase () {
       { userEmail: 'jane@gmail.com', playlistId: 'playlist_john_14' },
       { userEmail: 'jane@gmail.com', playlistId: 'playlist_john_15' },
       { userEmail: 'jane@gmail.com', playlistId: 'playlist_adele_1' },
-      { userEmail: 'jane@gmail.com', playlistId: 'playlist_adele_2' }
+      { userEmail: 'jane@gmail.com', playlistId: 'playlist_adele_2' },
+
+      { userEmail: 'tami@gmail.com', playlistId: 'playlist_adele_1' },
+      { userEmail: 'tami@gmail.com', playlistId: 'playlist_adele_2' },
+      { userEmail: 'tami@gmail.com', playlistId: 'playlist_adele_3' },
+      { userEmail: 'tami@gmail.com', playlistId: 'playlist_adele_4' },
+      { userEmail: 'tami@gmail.com', playlistId: 'playlist_adele_5' },
+      { userEmail: 'tami@gmail.com', playlistId: 'playlist_adele_6' },
+      { userEmail: 'tami@gmail.com', playlistId: 'playlist_john_9' },
+      { userEmail: 'tami@gmail.com', playlistId: 'playlist_john_10' },
+      { userEmail: 'tami@gmail.com', playlistId: 'playlist_john_11' },
+      { userEmail: 'tami@gmail.com', playlistId: 'playlist_john_12' },
+      { userEmail: 'tami@gmail.com', playlistId: 'playlist_john_13' },
+      { userEmail: 'tami@gmail.com', playlistId: 'playlist_john_14' },
+      { userEmail: 'tami@gmail.com', playlistId: 'playlist_john_15' }
     ]
 
     // Insert user_playlist_likes
@@ -479,7 +506,24 @@ async function seedDatabase () {
       { playlistId: 'playlist_adele_12', songId: 'song_john_7' },
       { playlistId: 'playlist_adele_12', songId: 'song_john_14' },
       { playlistId: 'playlist_adele_12', songId: 'song_adele_12' },
-      { playlistId: 'playlist_adele_12', songId: 'song_adele_3' }
+      { playlistId: 'playlist_adele_12', songId: 'song_adele_3' },
+
+      // Playlist 13
+      { playlistId: 'playlist_adele_13', songId: 'song_john_2' },
+      { playlistId: 'playlist_adele_13', songId: 'song_john_7' },
+      { playlistId: 'playlist_adele_13', songId: 'song_john_14' },
+      { playlistId: 'playlist_adele_13', songId: 'song_adele_5' },
+      { playlistId: 'playlist_adele_13', songId: 'song_adele_10' },
+      { playlistId: 'playlist_adele_13', songId: 'song_adele_15' },
+
+      // playlist 14
+      { playlistId: 'playlist_adele_14', songId: 'song_john_4' },
+      { playlistId: 'playlist_adele_14', songId: 'song_john_9' },
+
+      // playlist 15
+      { playlistId: 'playlist_adele_15', songId: 'song_john_7' },
+      { playlistId: 'playlist_adele_15', songId: 'song_john_14' },
+      { playlistId: 'playlist_adele_15', songId: 'song_adele_5' }
     ]
 
     // Insert playlist_songs
@@ -502,10 +546,24 @@ async function seedDatabase () {
       { playlistId: 'playlist_adele_1', userId: userIds['john@gmail.com'] },
       { playlistId: 'playlist_adele_1', userId: userIds['tami@gmail.com'] },
       { playlistId: 'playlist_adele_2', userId: userIds['john@gmail.com'] },
-      { playlistId: 'playlist_adele_2', userId: userIds['tami@gmail.com'] }
+      { playlistId: 'playlist_adele_2', userId: userIds['tami@gmail.com'] },
+
+      { playlistId: 'playlist_john_5', userId: userIds['tami@gmail.com'] },
+      { playlistId: 'playlist_john_6', userId: userIds['tami@gmail.com'] },
+      { playlistId: 'playlist_john_7', userId: userIds['tami@gmail.com'] },
+      { playlistId: 'playlist_john_8', userId: userIds['tami@gmail.com'] },
+      { playlistId: 'playlist_john_9', userId: userIds['tami@gmail.com'] },
+      { playlistId: 'playlist_john_10', userId: userIds['tami@gmail.com'] },
+
+      { playlistId: 'playlist_adele_5', userId: userIds['tami@gmail.com'] },
+      { playlistId: 'playlist_adele_6', userId: userIds['tami@gmail.com'] },
+      { playlistId: 'playlist_adele_7', userId: userIds['tami@gmail.com'] },
+      { playlistId: 'playlist_adele_8', userId: userIds['tami@gmail.com'] },
+      { playlistId: 'playlist_adele_9', userId: userIds['tami@gmail.com'] },
+      { playlistId: 'playlist_adele_10', userId: userIds['tami@gmail.com'] }
     ]
 
-    // Insert playlist_songs
+    // Insert collaboration playlist
     for (const collaboration of collaborations) {
       const id = `collab-${nanoid(16)}`
       const collaborationsQuery = {

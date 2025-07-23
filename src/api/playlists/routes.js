@@ -29,6 +29,14 @@ const routes = (handler) => [
     }
   },
   {
+    method: 'GET',
+    path: '/playlists/collab',
+    handler: handler.getPlaylistsCollabHandler,
+    options: {
+      auth: 'openmusic_jwt'
+    }
+  },
+  {
     method: 'DELETE',
     path: '/playlists/{id}',
     handler: handler.deletePlaylistByIdHandler,

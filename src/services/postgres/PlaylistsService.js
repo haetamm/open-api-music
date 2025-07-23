@@ -15,12 +15,12 @@ class PlaylistsService {
     this._pool = new Pool()
   }
 
-  async addPlaylist ({ name, owner }) {
+  async addPlaylist ({ title, owner }) {
     const id = `playlist-${nanoid(16)}`
 
     const query = {
       text: 'INSERT INTO playlists VALUES ($1, $2, $3) RETURNING id',
-      values: [id, name, owner]
+      values: [id, title, owner]
     }
 
     const result = await this._pool.query(query)
@@ -91,34 +91,77 @@ class PlaylistsService {
     return result.rows[0]
   }
 
-  async getPlaylistsByUserCount (owner) {
+  async getPlaylistsByUserCount (userId) {
     const query = {
-      text: 'SELECT COUNT(*) FROM playlists WHERE owner = $1',
-      values: [owner]
+      text: `
+      SELECT COUNT(*)
+      FROM playlists
+      WHERE owner = $1
+    `,
+      values: [userId]
     }
     const result = await this._pool.query(query)
     return parseInt(result.rows[0].count)
   }
 
-  async getPlaylistsByUser (owner, offset, limit) {
+  async getPlaylistsByUser (userId, offset, limit) {
     const query = {
       text: `
-        SELECT 
-          p.id,
-          p.title,
-          u.fullname,
-          COUNT(ps.song_id) AS song_count,
-          COALESCE(SUM(s.duration), 0) AS total_duration
-        FROM playlists p
-        JOIN users u ON u.id = p.owner
-        LEFT JOIN playlist_songs ps ON ps.playlist_id = p.id
-        LEFT JOIN songs s ON s.id = ps.song_id
-        WHERE p.owner = $1
-        GROUP BY p.id, u.fullname
-        ORDER BY p.created_at DESC
-        OFFSET $2 LIMIT $3
-      `,
-      values: [owner, offset, limit]
+      SELECT 
+        p.id,
+        p.title,
+        u.fullname,
+        COUNT(ps.song_id) AS song_count,
+        COALESCE(SUM(s.duration), 0) AS total_duration
+      FROM playlists p
+      JOIN users u ON u.id = p.owner
+      LEFT JOIN playlist_songs ps ON ps.playlist_id = p.id
+      LEFT JOIN songs s ON s.id = ps.song_id
+      WHERE p.owner = $1
+      GROUP BY p.id, u.fullname
+      ORDER BY p.created_at DESC
+      OFFSET $2 LIMIT $3
+    `,
+      values: [userId, offset, limit]
+    }
+    const result = await this._pool.query(query)
+    return result.rows.map(mapDBToModel)
+  }
+
+  async getPlaylistCollabCount (userId) {
+    const query = {
+      text: `
+      SELECT COUNT(DISTINCT p.id) AS count
+      FROM playlists p
+      LEFT JOIN collaborations c ON c.playlist_id = p.id
+      WHERE c.user_id = $1
+    `,
+      values: [userId]
+    }
+    const result = await this._pool.query(query)
+    return parseInt(result.rows[0].count)
+  }
+
+  async getPlaylistsCollab (userId, offset, limit) {
+    const query = {
+      text: `
+      SELECT 
+        p.id,
+        p.title,
+        u.fullname,
+        COUNT(ps.song_id) AS song_count,
+        COALESCE(SUM(s.duration), 0) AS total_duration
+      FROM playlists p
+      JOIN users u ON u.id = p.owner
+      LEFT JOIN playlist_songs ps ON ps.playlist_id = p.id
+      LEFT JOIN songs s ON s.id = ps.song_id
+      LEFT JOIN collaborations c ON c.playlist_id = p.id
+      WHERE c.user_id = $1
+      GROUP BY p.id, u.fullname
+      ORDER BY p.created_at DESC
+      OFFSET $2 LIMIT $3
+    `,
+      values: [userId, offset, limit]
     }
     const result = await this._pool.query(query)
     return result.rows.map(mapDBToModel)
