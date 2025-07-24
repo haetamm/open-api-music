@@ -166,23 +166,18 @@ class AlbumsService {
   }
 
   async editAlbumById (id, { title, artist, year }) {
-    try {
-      const query = {
-        text: 'UPDATE albums SET title = $1, artist = $2, year = $3 WHERE id = $4 RETURNING *',
-        values: [title, artist, year, id]
-      }
-
-      const result = await this._pool.query(query)
-
-      if (!result.rowCount) {
-        throw new NotFoundError('Gagal memperbarui album. Id tidak ditemukan')
-      }
-
-      return mapAlbum(result.rows[0])
-    } catch (err) {
-      console.log(err)
-      throw err // Re-throw the error for proper handling upstream
+    const query = {
+      text: 'UPDATE albums SET title = $1, artist = $2, year = $3 WHERE id = $4 RETURNING *',
+      values: [title, artist, year, id]
     }
+
+    const result = await this._pool.query(query)
+
+    if (!result.rowCount) {
+      throw new NotFoundError('Gagal memperbarui album. Id tidak ditemukan')
+    }
+
+    return mapAlbum(result.rows[0])
   }
 
   async deletAlbumById (id) {

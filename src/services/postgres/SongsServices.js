@@ -16,6 +16,19 @@ class SongsService {
     this._pool = new Pool()
   }
 
+  async validateAlbumExists (albumId) {
+    const query = {
+      text: 'SELECT id FROM albums WHERE id = $1',
+      values: [albumId]
+    }
+
+    const result = await this._pool.query(query)
+
+    if (!result.rowCount) {
+      throw new NotFoundError('Album tidak ditemukan')
+    }
+  }
+
   async addSong ({ title, year, performer, genre, duration, albumId, coverUrl, uploader }) {
     const i = nanoid(16)
     const id = `song-${i}`
@@ -35,22 +48,18 @@ class SongsService {
   }
 
   async editSongById (id, { title, year, performer, genre, duration, album_id }) {
-    try {
-      const query = {
-        text: 'UPDATE songs SET title = $1, year = $2, performer = $3, genre = $4, duration = $5, album_id = $6 WHERE id = $7 RETURNING *',
-        values: [title, year, performer, genre, duration, album_id, id]
-      }
-
-      const result = await this._pool.query(query)
-
-      if (!result.rows.length) {
-        throw new NotFoundError('Gagal memperbarui lagu. Id tidak ditemukan')
-      }
-
-      return mapDBToModelSong(result.rows[0])
-    } catch (err) {
-      console.log(err)
+    const query = {
+      text: 'UPDATE songs SET title = $1, year = $2, performer = $3, genre = $4, duration = $5, album_id = $6 WHERE id = $7 RETURNING *',
+      values: [title, year, performer, genre, duration, album_id, id]
     }
+
+    const result = await this._pool.query(query)
+
+    if (!result.rows.length) {
+      throw new NotFoundError('Gagal memperbarui lagu. Id tidak ditemukan')
+    }
+
+    return mapDBToModelSong(result.rows[0])
   }
 
   async getSongsCountByUser (userId) {
@@ -96,9 +105,8 @@ class SongsService {
   }
 
   async getSongsLikedByCurrentUser (userId, offset, limit) {
-    try {
-      const query = {
-        text: `
+    const query = {
+      text: `
           SELECT
             s.*,
             COUNT(usl.song_id) AS likes_count
@@ -109,13 +117,10 @@ class SongsService {
           ORDER BY s.created_at DESC 
           OFFSET $2 LIMIT $3
         `,
-        values: [userId, offset, limit]
-      }
-      const result = await this._pool.query(query)
-      return result.rows.map(mapDBToModelSongSearch)
-    } catch (err) {
-      console.log(err)
+      values: [userId, offset, limit]
     }
+    const result = await this._pool.query(query)
+    return result.rows.map(mapDBToModelSongSearch)
   }
 
   async getSongsCount (title) {
@@ -200,6 +205,7 @@ class SongsService {
         a.id AS album_id,
         a.title AS album_title,
         a.year AS album_year,
+        a.artist AS album_artist,
         a.cover_url AS album_cover,
         u.fullname AS album_uploader_name
       FROM albums a

@@ -18,7 +18,11 @@ class SongsHandler {
 
   async postSongHandler (request, h) {
     this._validator.validateSongPayload(request.payload)
-    const { title, year, performer, genre, duration, albumId } = request.payload
+    const { title, year, performer, genre, duration, albumId = null } = request.payload
+
+    if (albumId) {
+      await this._service.validateAlbumExists(albumId)
+    }
 
     const { id: credentialId } = request.auth.credentials
     const song = await this._service.addSong({ title, year, performer, genre, duration, albumId, coverUrl: null, uploader: credentialId })
@@ -111,6 +115,10 @@ class SongsHandler {
   async putSongByIdHendler (request, h) {
     const { title, year, performer, genre, duration, albumId } = request.payload
     const { id } = request.params
+
+    if (albumId) {
+      await this._service.validateAlbumExists(albumId)
+    }
 
     const { id: credentialId } = request.auth.credentials
     await this._service.verifySongUploader(id, credentialId)
