@@ -6,4 +6,8 @@ const AlbumPayloadSchema = Joi.object({
   year: Joi.number().required()
 })
 
-module.exports = { AlbumPayloadSchema }
+const DeleteSongFromAlbumPayloadSchema = Joi.object({
+  songId: Joi.string().required().trim()
+})
+
+module.exports = { AlbumPayloadSchema, DeleteSongFromAlbumPayloadSchema }

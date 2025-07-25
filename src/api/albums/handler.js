@@ -11,6 +11,7 @@ class AlbumsHandler {
     this.getAlbumByIdHandler = this.getAlbumByIdHandler.bind(this)
     this.putAlbumByIdHandler = this.putAlbumByIdHandler.bind(this)
     this.deleteAlbumByIdHandler = this.deleteAlbumByIdHandler.bind(this)
+    this.removeSongFromAlbumHandler = this.removeSongFromAlbumHandler.bind(this)
   }
 
   async postAlbumHandler (request, h) {
@@ -103,6 +104,23 @@ class AlbumsHandler {
     return {
       status: 'success',
       message: 'Album berhasil dihapus'
+    }
+  }
+
+  async removeSongFromAlbumHandler (request) {
+    this._validator.validateDeleteSongFromAlbumPayload(request.payload)
+
+    const { id } = request.params
+    const { id: credentialId } = request.auth.credentials
+    const { songId } = request.payload
+
+    await this._service.verifyAlbumUploader(id, credentialId)
+    await this._service.verifySongExistsInAlbum(songId, id)
+    await this._service.removeSongFromAlbum(songId, id)
+
+    return {
+      status: 'success',
+      message: 'Lagu berhasil dihapus dari album'
     }
   }
 }

@@ -40,7 +40,16 @@ const routes = (handler) => [
     options: {
       auth: 'openmusic_jwt'
     }
+  },
+  {
+    method: 'DELETE',
+    path: '/albums/{id}/songs',
+    handler: handler.removeSongFromAlbumHandler,
+    options: {
+      auth: 'openmusic_jwt'
+    }
   }
+
 ]
 
 module.exports = routes

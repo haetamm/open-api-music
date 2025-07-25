@@ -193,10 +193,25 @@ class AlbumsService {
     }
   }
 
-  async addCoverAlbum (id, link) {
+  async verifySongExistsInAlbum (songId, albumId) {
     const query = {
-      text: 'UPDATE albums SET cover_url = $1 WHERE id = $2',
-      values: [link, id]
+      text: 'SELECT id FROM songs WHERE id = $1 AND album_id = $2',
+      values: [songId, albumId]
+    }
+
+    const result = await this._pool.query(query)
+    if (result.rowCount === 0) {
+      throw new NotFoundError('Lagu tidak ditemukan di album ini')
+    }
+  }
+
+  async removeSongFromAlbum (songId, albumId) {
+    const query = {
+      text: `UPDATE songs
+            SET album_id = NULL
+            WHERE id = $1 AND album_id = $2
+          `,
+      values: [songId, albumId]
     }
 
     await this._pool.query(query)
@@ -218,6 +233,15 @@ class AlbumsService {
     if (album.uploader !== userId) {
       throw new AuthorizationError('Anda tidak berhak mengakses resource ini')
     }
+  }
+
+  async addCoverAlbum (id, link) {
+    const query = {
+      text: 'UPDATE albums SET cover_url = $1 WHERE id = $2',
+      values: [link, id]
+    }
+
+    await this._pool.query(query)
   }
 }
 

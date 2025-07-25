@@ -48,7 +48,7 @@ exports.up = pgm => {
 
   pgm.addConstraint('albums', 'fk_albums.uploader_users.id', 'FOREIGN KEY(uploader) REFERENCES users(id) ON DELETE CASCADE')
 
-  pgm.addConstraint('songs', 'fk_songs.album_id_albums.id', 'FOREIGN KEY(album_id) REFERENCES albums(id) ON DELETE CASCADE')
+  pgm.addConstraint('songs', 'fk_songs.album_id_albums.id', 'FOREIGN KEY(album_id) REFERENCES albums(id) ON DELETE SET NULL')
 
   // === PLAYLISTS ===
   pgm.createTable('playlists', {
