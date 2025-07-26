@@ -1,19 +1,9 @@
-const { Pool } = require('pg')
 const { nanoid } = require('nanoid')
 const NotFoundError = require('../../exceptions/NotFoundError')
 const InvariantError = require('../../exceptions/InvariantError')
+const BaseService = require('./BaseService')
 
-class CollaborationsService {
-  constructor () {
-    // supabase
-    // this._pool = new Pool({
-    //   connectionString: process.env.DATABASE_URL
-    // })
-
-    // db
-    this._pool = new Pool()
-  }
-
+class CollaborationsService extends BaseService {
   async addCollaboration (playlistId, userId) {
     const id = `collab-${nanoid(16)}`
     const query = {

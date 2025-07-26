@@ -1,20 +1,10 @@
-const { Pool } = require('pg')
 const { nanoid } = require('nanoid')
 const bcrypt = require('bcrypt')
 const InvariantError = require('../../exceptions/InvariantError')
 const AuthenticationError = require('../../exceptions/AuthenticationError')
+const BaseService = require('./BaseService')
 
-class UsersService {
-  constructor () {
-    // supabase
-    // this._pool = new Pool({
-    //   connectionString: process.env.DATABASE_URL
-    // })
-
-    // db
-    this._pool = new Pool()
-  }
-
+class UsersService extends BaseService {
   async addUser ({ email, password, fullname }) {
     await this.verifyNewEmail(email)
 

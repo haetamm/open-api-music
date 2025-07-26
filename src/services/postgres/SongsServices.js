@@ -1,21 +1,11 @@
 const { nanoid } = require('nanoid')
-const { Pool } = require('pg')
 const InvariantError = require('../../exceptions/InvariantError')
 const NotFoundError = require('../../exceptions/NotFoundError')
 const { mapDBToModelSong, mapDBToModelSongSearch } = require('../../utils/songs')
 const AuthorizationError = require('../../exceptions/AuthorizationError')
+const BaseService = require('./BaseService')
 
-class SongsService {
-  constructor () {
-    // supabase
-    // this._pool = new Pool({
-    //   connectionString: process.env.DATABASE_URL
-    // })
-
-    // db
-    this._pool = new Pool()
-  }
-
+class SongsService extends BaseService {
   async validateAlbumExists (albumId) {
     const query = {
       text: 'SELECT id FROM albums WHERE id = $1',

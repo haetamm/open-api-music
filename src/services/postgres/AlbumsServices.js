@@ -1,21 +1,11 @@
 const { nanoid } = require('nanoid')
-const { Pool } = require('pg')
 const InvariantError = require('../../exceptions/InvariantError')
 const NotFoundError = require('../../exceptions/NotFoundError')
 const { mapDBToModel, mapAlbumToModel, mapAlbum } = require('../../utils/albums')
 const AuthorizationError = require('../../exceptions/AuthorizationError')
+const BaseService = require('./BaseService')
 
-class AlbumsService {
-  constructor () {
-    // supabase
-    // this._pool = new Pool({
-    //   connectionString: process.env.DATABASE_URL
-    // })
-
-    // db
-    this._pool = new Pool()
-  }
-
+class AlbumsService extends BaseService {
   async addAlbum ({ title, artist, year, coverUrl, uploader }) {
     const i = nanoid(16)
     const id = `album-${i}`

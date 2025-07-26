@@ -1,18 +1,10 @@
 const { nanoid } = require('nanoid')
-const { Pool } = require('pg')
+const BaseService = require('./BaseService')
 
-class LikesService {
-  constructor () {
-    // supabase
-    // this._pool = new Pool({
-    //   connectionString: process.env.DATABASE_URL
-    // })
-
-    // db
-    this._pool = new Pool()
-
-    // this._cacheService = cacheService
-  }
+class LikesService extends BaseService {
+  // constructor (cacheService) {
+  //   this._cacheService = cacheService
+  // }
 
   async addLike (albumId, userId) {
     const id = `likes-${nanoid(16)}`

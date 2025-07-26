@@ -1,21 +1,14 @@
 const { nanoid } = require('nanoid')
-const { Pool } = require('pg')
 const InvariantError = require('../../exceptions/InvariantError')
 const NotFoundError = require('../../exceptions/NotFoundError')
 const { mapDBToModel, mapDbActivitiesToModel } = require('../../utils/playlists')
 const { mapDBToModelSong } = require('../../utils/songs')
 const AuthorizationError = require('../../exceptions/AuthorizationError')
+const BaseService = require('./BaseService')
 
-class PlaylistSongsService {
+class PlaylistSongsService extends BaseService {
   constructor (collaborationService) {
-    // supabase
-    // this._pool = new Pool({
-    //   connectionString: process.env.DATABASE_URL
-    // })
-
-    // db
-    this._pool = new Pool()
-
+    super()
     this._collaborationService = collaborationService
   }
 

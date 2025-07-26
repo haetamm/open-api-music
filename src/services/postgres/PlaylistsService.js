@@ -1,20 +1,10 @@
 const { nanoid } = require('nanoid')
-const { Pool } = require('pg')
 const InvariantError = require('../../exceptions/InvariantError')
 const NotFoundError = require('../../exceptions/NotFoundError')
 const { mapDBToModel } = require('../../utils/playlists')
+const BaseService = require('./BaseService')
 
-class PlaylistsService {
-  constructor () {
-    // supabase
-    // this._pool = new Pool({
-    //   connectionString: process.env.DATABASE_URL
-    // })
-
-    // db
-    this._pool = new Pool()
-  }
-
+class PlaylistsService extends BaseService {
   async addPlaylist ({ title, owner }) {
     const id = `playlist-${nanoid(16)}`
 

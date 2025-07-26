@@ -1,17 +1,7 @@
-const { Pool } = require('pg')
 const AuthenticationError = require('../../exceptions/AuthenticationError')
+const BaseService = require('./BaseService')
 
-class AuthenticationsService {
-  constructor () {
-    // supabase
-    // this._pool = new Pool({
-    //   connectionString: process.env.DATABASE_URL
-    // })
-
-    // db
-    this._pool = new Pool()
-  }
-
+class AuthenticationsService extends BaseService {
   async addRefreshToken (token) {
     const query = {
       text: 'INSERT INTO authentications VALUES ($1)',
