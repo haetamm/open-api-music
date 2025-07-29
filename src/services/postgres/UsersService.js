@@ -68,6 +68,21 @@ class UsersService extends BaseService {
     return result.rows[0]
   }
 
+  async getUsers (name) {
+    if (!name) {
+      throw new InvariantError('Query parameter "name" is required')
+    }
+
+    const query = {
+      text: 'SELECT id, fullname FROM users WHERE name = $1',
+      values: [name]
+    }
+
+    const result = await this._pool.query(query)
+
+    return result.rows
+  }
+
   async getUserIdByEmail (email) {
     const query = {
       text: 'SELECT id FROM users WHERE email = $1',

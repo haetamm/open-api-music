@@ -4,7 +4,8 @@ class UserHandler {
     this._validator = validator
 
     this.postUserHandler = this.postUserHandler.bind(this)
-    this.getUserHandler = this.getUserHandler.bind(this)
+    this.getCurrentUserHandler = this.getCurrentUserHandler.bind(this)
+    this.getUsersHandler = this.getUsersHandler.bind(this)
   }
 
   async postUserHandler (request, h) {
@@ -15,7 +16,6 @@ class UserHandler {
 
     const response = h.response({
       status: 'success',
-      message: 'User berhasil ditambahkan',
       data: {
         userId
       }
@@ -24,20 +24,32 @@ class UserHandler {
     return response
   }
 
-  async getUserHandler (request, h) {
+  async getCurrentUserHandler (request, h) {
     const { id: credentialId } = request.auth.credentials
 
     const user = await this._service.getUser(credentialId)
 
     const response = h.response({
       status: 'success',
-      message: 'selamat datang',
       data: {
         user
       }
     })
     response.code(200)
     return response
+  }
+
+  async getUsersHandler (request) {
+    const { name } = request.query
+
+    const users = await this._service.getUsers(name)
+
+    return {
+      status: 'success',
+      data: {
+        users
+      }
+    }
   }
 }
 

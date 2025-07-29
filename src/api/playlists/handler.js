@@ -8,7 +8,8 @@ class PlaylistsHandler {
 
     this.postPlaylistHandler = this.postPlaylistHandler.bind(this)
     this.getPlaylistsHandler = this.getPlaylistsHandler.bind(this)
-    this.getPlaylistsByCurrentUserHandler = this.getPlaylistsByCurrentUserHandler.bind(this)
+    this.getMyPlaylistsHandler = this.getMyPlaylistsHandler.bind(this)
+    this.getAllMyPlaylistsHandler = this.getAllMyPlaylistsHandler.bind(this)
     this.getPlaylistsLikedHandler = this.getPlaylistsLikedHandler.bind(this)
     this.getPlaylistsCollabHandler = this.getPlaylistsCollabHandler.bind(this)
     this.deletePlaylistByIdHandler = this.deletePlaylistByIdHandler.bind(this)
@@ -17,16 +18,25 @@ class PlaylistsHandler {
   async postPlaylistHandler (request, h) {
     this._validator.validatePlaylistsPayload(request.payload)
 
-    const { title } = request.payload
+    const { title, songId } = request.payload
 
     const { id: credentialId } = request.auth.credentials
-    const playlistId = await this._service.addPlaylist({
+    const playlist = await this._service.addPlaylist({
       title, owner: credentialId
     })
+
+    if (songId) {
+      await this._playlistSongsService.addPlaylistSong({
+        songId, id: playlist.id, userId: credentialId
+      })
+    }
+
+    playlist.songs = await this._service.getSongsInPlaylist(playlist.id)
+
     const response = h.response({
       status: 'success',
       data: {
-        playlistId
+        playlist
       }
     })
     response.code(201)
@@ -47,7 +57,7 @@ class PlaylistsHandler {
     }, validatedPage, validatedLimit)
   }
 
-  async getPlaylistsByCurrentUserHandler (request, h) {
+  async getMyPlaylistsHandler (request, h) {
     const { id: credentialId } = request.auth.credentials
     const { page = 1, limit = 10 } = request.query
     const { page: validatedPage, limit: validatedLimit, offset } = validateAndCalculatePagination(page, limit)
@@ -60,6 +70,21 @@ class PlaylistsHandler {
       results: playlists,
       resourceName: 'playlists'
     }, validatedPage, validatedLimit)
+  }
+
+  async getAllMyPlaylistsHandler (request, h) {
+    const { id: credentialId } = request.auth.credentials
+
+    const playlists = await this._service.getAllMyPlaylistsHandler(credentialId)
+
+    for (const playlist of playlists) {
+      playlist.songs = await this._service.getSongsInPlaylist(playlist.id)
+    }
+
+    return h.response({
+      status: 'success',
+      data: { playlists }
+    })
   }
 
   async getPlaylistsLikedHandler (request, h) {

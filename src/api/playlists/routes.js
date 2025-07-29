@@ -15,7 +15,15 @@ const routes = (handler) => [
   {
     method: 'GET',
     path: '/playlists/me',
-    handler: handler.getPlaylistsByCurrentUserHandler,
+    handler: handler.getMyPlaylistsHandler,
+    options: {
+      auth: 'openmusic_jwt'
+    }
+  },
+  {
+    method: 'GET',
+    path: '/playlists/all',
+    handler: handler.getAllMyPlaylistsHandler,
     options: {
       auth: 'openmusic_jwt'
     }
