@@ -23,9 +23,12 @@ class PlaylistSongsHandler {
     await this._service.addPlaylistSong({
       songId, id, userId
     })
+
     const response = h.response({
       status: 'success',
-      message: 'Lagu berhasil ditambahkan ke playlists'
+      data: {
+        playlistId: id
+      }
     })
     response.code(201)
     return response

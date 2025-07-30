@@ -14,6 +14,7 @@ class PlaylistSongsService extends BaseService {
 
   async addPlaylistSong ({ songId, id, userId }) {
     await this.verifyNewSongInPlaylists(songId, id)
+    await this.verifyPlaylistAccess(id, userId)
     const idPlaylistSong = `playlistSong-${nanoid(16)}`
     const query = {
       text: 'INSERT INTO playlist_songs VALUES ($1, $2, $3) RETURNING id',
@@ -45,18 +46,19 @@ class PlaylistSongsService extends BaseService {
   async getPlaylistDetail (id) {
     const query = {
       text: `
-      SELECT 
-        playlists.id,
-        playlists.title,
-        users.fullname,
-        COUNT(ps.song_id)::INTEGER AS song_count,
-        COALESCE(SUM(s.duration), 0) AS total_duration
-      FROM playlists
-      JOIN users ON users.id = playlists.owner
-      LEFT JOIN playlist_songs ps ON ps.playlist_id = playlists.id
-      LEFT JOIN songs s ON s.id = ps.song_id
-      WHERE playlists.id = $1
-      GROUP BY playlists.id, playlists.title, users.fullname`,
+        SELECT 
+          playlists.id,
+          playlists.title,
+          users.fullname,
+          users.id AS user_id,
+          COUNT(ps.song_id)::INTEGER AS song_count,
+          COALESCE(SUM(s.duration), 0) AS total_duration
+        FROM playlists
+        JOIN users ON users.id = playlists.owner
+        LEFT JOIN playlist_songs ps ON ps.playlist_id = playlists.id
+        LEFT JOIN songs s ON s.id = ps.song_id
+        WHERE playlists.id = $1
+        GROUP BY playlists.id, playlists.title, users.fullname, users.id`,
       values: [id]
     }
 
