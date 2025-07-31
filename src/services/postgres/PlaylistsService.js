@@ -217,6 +217,19 @@ class PlaylistsService extends BaseService {
     return result.rows.map(mapDBToModel)
   }
 
+  async updatePlaylistById (id, title) {
+    const query = {
+      text: 'UPDATE playlists SET title = $1 WHERE id = $2 RETURNING *',
+      values: [title, id]
+    }
+
+    const result = await this._pool.query(query)
+
+    if (!result.rowCount) {
+      throw new NotFoundError('Gagal memperbarui playlist. Id tidak ditemukan')
+    }
+  }
+
   async deletePlaylistById (id) {
     const query = {
       text: 'DELETE FROM playlists WHERE id = $1 RETURNING id',

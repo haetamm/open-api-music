@@ -12,6 +12,7 @@ class PlaylistsHandler {
     this.getAllMyPlaylistsHandler = this.getAllMyPlaylistsHandler.bind(this)
     this.getPlaylistsLikedHandler = this.getPlaylistsLikedHandler.bind(this)
     this.getPlaylistsCollabHandler = this.getPlaylistsCollabHandler.bind(this)
+    this.updatePlaylistByIdHandler = this.updatePlaylistByIdHandler.bind(this)
     this.deletePlaylistByIdHandler = this.deletePlaylistByIdHandler.bind(this)
   }
 
@@ -115,6 +116,21 @@ class PlaylistsHandler {
       results: playlists,
       resourceName: 'playlists'
     }, validatedPage, validatedLimit)
+  }
+
+  async updatePlaylistByIdHandler (request) {
+    this._validator.validatePlaylistsPayload(request.payload)
+    const { id } = request.params
+    const { title } = request.payload
+    const { id: credentialId } = request.auth.credentials
+
+    await this._playlistSongsService.verifyPlaylistOwner(id, credentialId)
+
+    await this._service.updatePlaylistById(id, title)
+    return {
+      status: 'success',
+      message: 'Playlist berhasil diupdate'
+    }
   }
 
   async deletePlaylistByIdHandler (request) {

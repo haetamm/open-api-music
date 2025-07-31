@@ -5,4 +5,8 @@ const PlaylistsPayloadSchema = Joi.object({
   songId: Joi.string().optional()
 })
 
-module.exports = PlaylistsPayloadSchema
+const UpdatePlaylistsPayloadSchema = Joi.object({
+  title: Joi.string().required().min(3)
+})
+
+module.exports = { PlaylistsPayloadSchema, UpdatePlaylistsPayloadSchema }
