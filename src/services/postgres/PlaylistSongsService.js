@@ -189,16 +189,30 @@ class PlaylistSongsService extends BaseService {
 
   async getPlaylistSongActivities (id) {
     const query = {
-      text: `SELECT playlist_song_activities.playlist_id, playlist_song_activities.action, playlist_song_activities.time, users.username, songs.title
-      FROM playlist_song_activities 
-      JOIN users ON users.id = playlist_song_activities.user_id
-      JOIN songs ON songs.id = playlist_song_activities.song_id 
-      WHERE playlist_song_activities.playlist_id = $1`,
+      text: `SELECT playlist_song_activities.playlist_id, playlist_song_activities.action, playlist_song_activities.time, users.fullname, songs.title
+        FROM playlist_song_activities 
+        JOIN users ON users.id = playlist_song_activities.user_id
+        JOIN songs ON songs.id = playlist_song_activities.song_id 
+        WHERE playlist_song_activities.playlist_id = $1`,
       values: [id]
     }
 
     const result = await this._pool.query(query)
+
     return result.rows.map(mapDbActivitiesToModel)
+  }
+
+  async getPlaylistById (id) {
+    const result = await this._pool.query({
+      text: 'SELECT * FROM playlists WHERE id = $1',
+      values: [id]
+    })
+
+    if (!result.rowCount) {
+      throw new NotFoundError('Playlist tidak ditemukan')
+    }
+
+    return result.rows[0]
   }
 }
 

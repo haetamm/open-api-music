@@ -78,17 +78,16 @@ class PlaylistSongsHandler {
 
   async getPlaylistSongActivitiesHandler (request, h) {
     const { id } = request.params
-    const { id: credentialId } = request.auth.credentials
-
-    await this._service.verifyPlaylistAccess(id, credentialId)
+    const playlist = await this._service.getPlaylistById(id)
 
     const activiti = await this._service.getPlaylistSongActivities(id)
+
+    playlist.activities = activiti
 
     const response = h.response({
       status: 'success',
       data: {
-        playlistId: id,
-        activities: activiti
+        playlist
       }
     })
     response.code(200)
