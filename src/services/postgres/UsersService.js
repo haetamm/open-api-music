@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt')
 const InvariantError = require('../../exceptions/InvariantError')
 const AuthenticationError = require('../../exceptions/AuthenticationError')
 const BaseService = require('./BaseService')
+const { mapDBToModel } = require('../../utils/users')
 
 class UsersService extends BaseService {
   async addUser ({ email, password, fullname }) {
@@ -74,13 +75,14 @@ class UsersService extends BaseService {
     }
 
     const query = {
-      text: 'SELECT id, fullname FROM users WHERE name = $1',
-      values: [name]
+      text: 'SELECT id, fullname FROM users WHERE fullname ILIKE $1',
+      values: [`%${name}%`] // match partial name, case-insensitive
     }
 
     const result = await this._pool.query(query)
 
-    return result.rows
+    const users = result.rows.map(mapDBToModel)
+    return users
   }
 
   async getUserIdByEmail (email) {

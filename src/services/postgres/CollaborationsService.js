@@ -18,7 +18,7 @@ class CollaborationsService extends BaseService {
     return result.rows[0].id
   }
 
-  async verifyUsername (userId) {
+  async verifyUserById (userId) {
     const query = {
       text: 'SELECT * FROM users WHERE id = $1',
       values: [userId]

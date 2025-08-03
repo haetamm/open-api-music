@@ -9,28 +9,35 @@ class CollaborationsHandler {
   }
 
   async postCollaborationHandler (request, h) {
-    this._validator.validateCollaborationPayload(request.payload)
-    const { id: owner } = request.auth.credentials
-    const { playlistId, userId } = request.payload
+    this._validator.postValidateCollaborationPayload(request.payload)
 
-    await this._collaborationsService.verifyUsername(userId)
+    const { id: owner } = request.auth.credentials
+    const { playlistId, userIds } = request.payload
 
     await this._playlistSongsService.verifyPlaylistOwner(playlistId, owner)
 
-    const collaborationId = await this._collaborationsService.addCollaboration(playlistId, userId)
+    const addedCollaborations = []
+
+    for (const userId of userIds) {
+      await this._collaborationsService.verifyUserById(userId)
+
+      const collaborationId = await this._collaborationsService.addCollaboration(playlistId, userId)
+      addedCollaborations.push({ collaborationId })
+    }
 
     const response = h.response({
       status: 'success',
       data: {
-        collaborationId
+        collaborations: addedCollaborations
       }
     })
+
     response.code(201)
     return response
   }
 
   async deleteCollaborationHandler (request, h) {
-    this._validator.validateCollaborationPayload(request.payload)
+    this._validator.deleteValidateCollaborationPayload(request.payload)
     const { id: owner } = request.auth.credentials
     const { playlistId, userId } = request.payload
 

@@ -193,7 +193,8 @@ class PlaylistSongsService extends BaseService {
         FROM playlist_song_activities 
         JOIN users ON users.id = playlist_song_activities.user_id
         JOIN songs ON songs.id = playlist_song_activities.song_id 
-        WHERE playlist_song_activities.playlist_id = $1`,
+        WHERE playlist_song_activities.playlist_id = $1
+        ORDER BY playlist_song_activities.created_at DESC`,
       values: [id]
     }
 

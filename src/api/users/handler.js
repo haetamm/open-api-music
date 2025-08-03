@@ -41,7 +41,6 @@ class UserHandler {
 
   async getUsersHandler (request) {
     const { name } = request.query
-
     const users = await this._service.getUsers(name)
 
     return {

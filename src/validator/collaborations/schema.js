@@ -1,8 +1,13 @@
 const Joi = require('joi')
 
-const CollaborationPayloadSchema = Joi.object({
+const PostCollaborationPayloadSchema = Joi.object({
+  playlistId: Joi.string().required(),
+  userIds: Joi.array().items(Joi.string().required()).min(1).required()
+})
+
+const DeleteCollaborationPayloadSchema = Joi.object({
   playlistId: Joi.string().required(),
   userId: Joi.string().required()
 })
 
-module.exports = { CollaborationPayloadSchema }
+module.exports = { DeleteCollaborationPayloadSchema, PostCollaborationPayloadSchema }
