@@ -223,6 +223,17 @@ const init = async () => {
     return h.continue
   })
 
+  server.route({
+    method: 'GET',
+    path: '/',
+    handler: (request, h) => {
+      return {
+        status: 'success',
+        message: 'Selamat jumpa'
+      }
+    }
+  })
+  
   await server.start()
   console.log(`Server berjalan pada ${server.info.uri}`)
 }

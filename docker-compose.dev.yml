@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:17-alpine
+    container_name: musweb-api-db
+    environment:
+      POSTGRES_USER: musweb
+      POSTGRES_PASSWORD: rahasia
+      POSTGRES_DB: musweb-api
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_dev_data_musweb:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U musweb -d musweb-api"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: musweb-api-redis
+    ports:
+      - "6379:6379"
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: musweb-api-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: musweb-api-dev
+    env_file:
+      - .env
+    ports:
+      - "5000:5000"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules
+    command: ["sh", "-c", "npm run start-dev"]
+
+volumes:
+  postgres_dev_data_musweb:
+  node_modules:
